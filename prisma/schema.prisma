@@ -7,3 +7,252 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+// ===========================
+// USUARIOS
+// ===========================
+
+enum Role {
+  ADMIN
+  INSTRUCTOR
+  MEMBER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(MEMBER)
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relaciones
+  accounts      Account[]
+  sessions      Session[]
+  bookings      Booking[]
+  memberships   UserMembership[]
+  payments      Payment[]
+  instructor    Instructor?
+
+  @@map("users")
+}
+
+// ===========================
+// AUTH.JS (no tocar)
+// ===========================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ===========================
+// INSTRUCTORES
+// ===========================
+
+model Instructor {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  bio       String?
+  specialty String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  classes Class[]
+
+  @@map("instructors")
+}
+
+// ===========================
+// TIPOS DE CLASE
+// ===========================
+
+model ClassType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  color       String   @default("#6366f1")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  classes Class[]
+
+  @@map("class_types")
+}
+
+// ===========================
+// CLASES
+// ===========================
+
+enum ClassStatus {
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+}
+
+model Class {
+  id           String      @id @default(cuid())
+  title        String
+  description  String?
+  startTime    DateTime
+  endTime      DateTime
+  capacity     Int
+  status       ClassStatus @default(SCHEDULED)
+  instructorId String
+  classTypeId  String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // Relaciones
+  instructor Instructor @relation(fields: [instructorId], references: [id])
+  classType  ClassType  @relation(fields: [classTypeId], references: [id])
+  bookings   Booking[]
+
+  @@map("classes")
+}
+
+// ===========================
+// RESERVAS
+// ===========================
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+  WAITLIST
+  ATTENDED
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  userId    String
+  classId   String
+  status    BookingStatus @default(CONFIRMED)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  // Relaciones
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  // Un usuario no puede reservar la misma clase dos veces
+  @@unique([userId, classId])
+  @@map("bookings")
+}
+
+// ===========================
+// MEMBRESÍAS
+// ===========================
+
+enum MembershipType {
+  BASIC
+  PREMIUM
+  QUARTERLY
+  ANNUAL
+}
+
+model Membership {
+  id          String         @id @default(cuid())
+  name        String
+  type        MembershipType @unique
+  description String?
+  price       Float
+  duration    Int            // días
+  classLimit  Int?           // null = ilimitado
+  stripePriceId String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relaciones
+  userMemberships UserMembership[]
+
+  @@map("memberships")
+}
+
+model UserMembership {
+  id           String    @id @default(cuid())
+  userId       String
+  membershipId String
+  startDate    DateTime  @default(now())
+  endDate      DateTime
+  classesUsed  Int       @default(0)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relaciones
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  membership Membership @relation(fields: [membershipId], references: [id])
+  payments   Payment[]
+
+  @@map("user_memberships")
+}
+
+// ===========================
+// PAGOS
+// ===========================
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id               String        @id @default(cuid())
+  userId           String
+  userMembershipId String?
+  amount           Float
+  currency         String        @default("EUR")
+  status           PaymentStatus @default(PENDING)
+  stripePaymentId  String?       @unique
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  // Relaciones
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userMembership UserMembership? @relation(fields: [userMembershipId], references: [id])
+
+  @@map("payments")
+}
