@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { Calendar, Home, LogOut, User } from 'lucide-react';
+import { Calendar, Home, LogOut, User, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Navbar() {
@@ -13,6 +13,7 @@ export default function Navbar() {
   const links = [
     { href: '/dashboard', label: 'Inicio', icon: Home },
     { href: '/clases', label: 'Clases', icon: Calendar },
+    { href: '/precios', label: 'Precios', icon: CreditCard },
     { href: '/perfil', label: 'Perfil', icon: User },
   ];
 
