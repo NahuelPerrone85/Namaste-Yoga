@@ -21,9 +21,7 @@ export async function GET() {
             instructor: {
               include: {
                 user: {
-                  select: {
-                    name: true,
-                  },
+                  select: { name: true },
                 },
               },
             },
@@ -32,9 +30,7 @@ export async function GET() {
         },
       },
       orderBy: {
-        class: {
-          startTime: 'asc',
-        },
+        class: { startTime: 'asc' },
       },
     });
 
@@ -65,7 +61,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verificar que la clase existe
     const yogaClass = await db.class.findUnique({
       where: { id: classId },
       include: {
@@ -82,7 +77,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verificar que la clase no está llena
     if (yogaClass.bookings.length >= yogaClass.capacity) {
       return NextResponse.json(
         { error: 'La clase está llena' },
@@ -90,7 +84,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verificar que la clase no ha pasado
     if (yogaClass.startTime < new Date()) {
       return NextResponse.json(
         { error: 'No puedes reservar una clase pasada' },
@@ -98,7 +91,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verificar que no tiene ya una reserva
     const existingBooking = await db.booking.findUnique({
       where: {
         userId_classId: {
@@ -109,13 +101,22 @@ export async function POST(req: Request) {
     });
 
     if (existingBooking) {
-      return NextResponse.json(
-        { error: 'Ya tienes una reserva para esta clase' },
-        { status: 400 }
-      );
+      if (existingBooking.status === 'CONFIRMED') {
+        return NextResponse.json(
+          { error: 'Ya tienes una reserva para esta clase' },
+          { status: 400 }
+        );
+      }
+
+      // Si estaba cancelada, la reactivamos
+      const updated = await db.booking.update({
+        where: { id: existingBooking.id },
+        data: { status: 'CONFIRMED' },
+      });
+
+      return NextResponse.json(updated, { status: 200 });
     }
 
-    // Crear la reserva
     const booking = await db.booking.create({
       data: {
         userId: session.user.id,

@@ -15,13 +15,14 @@ export default async function DashboardPage() {
     redirect('/login');
   }
 
-  // Obtener próximas reservas del usuario
+  // Obtener próximas reservas confirmadas
   const upcomingBookings = await db.booking.findMany({
     where: {
       userId: session.user.id,
       status: 'CONFIRMED',
       class: {
         startTime: { gte: new Date() },
+        status: 'SCHEDULED',
       },
     },
     include: {
@@ -40,7 +41,7 @@ export default async function DashboardPage() {
     take: 5,
   });
 
-  // Obtener membresía activa
+  // Membresía activa
   const activeMembership = await db.userMembership.findFirst({
     where: {
       userId: session.user.id,
@@ -50,11 +51,14 @@ export default async function DashboardPage() {
     include: { membership: true },
   });
 
-  // Total de reservas
+  // Total reservas confirmadas futuras
   const totalBookings = await db.booking.count({
     where: {
       userId: session.user.id,
       status: 'CONFIRMED',
+      class: {
+        startTime: { gte: new Date() },
+      },
     },
   });
 
@@ -74,7 +78,7 @@ export default async function DashboardPage() {
           <Card>
             <CardContent className="p-6">
               <h2 className="mb-1 text-sm font-medium text-gray-500">
-                Total reservas
+                Próximas clases
               </h2>
               <p className="text-3xl font-bold text-purple-600">
                 {totalBookings}
@@ -125,7 +129,9 @@ export default async function DashboardPage() {
         {/* Próximas clases */}
         <div className="mb-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Próximas clases</h2>
+            <h2 className="text-xl font-bold text-gray-900">
+              Mis próximas clases
+            </h2>
             <Link
               href="/clases"
               className="text-sm font-medium text-purple-600 hover:underline"
@@ -150,47 +156,68 @@ export default async function DashboardPage() {
             </Card>
           ) : (
             <div className="space-y-3">
-              {upcomingBookings.map((booking) => (
-                <Card key={booking.id}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="rounded-lg bg-purple-100 p-3">
-                          <Calendar className="h-5 w-5 text-purple-600" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">
-                            {booking.class.title}
-                          </h3>
-                          <div className="mt-1 flex items-center gap-3">
-                            <span className="flex items-center gap-1 text-sm text-gray-500">
-                              <Clock className="h-3 w-3" />
-                              {format(
-                                new Date(booking.class.startTime),
-                                'EEEE d MMM · HH:mm',
-                                { locale: es }
-                              )}
-                            </span>
-                            <span className="flex items-center gap-1 text-sm text-gray-500">
-                              <User className="h-3 w-3" />
-                              {booking.class.instructor.user.name}
-                            </span>
+              {upcomingBookings.map((booking) => {
+                const twoHoursBefore = new Date(booking.class.startTime);
+                twoHoursBefore.setHours(twoHoursBefore.getHours() - 2);
+                const canCancel = new Date() < twoHoursBefore;
+
+                return (
+                  <Card
+                    key={booking.id}
+                    className="transition-shadow hover:shadow-md"
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="rounded-lg bg-purple-100 p-3">
+                            <Calendar className="h-5 w-5 text-purple-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-900">
+                              {booking.class.title}
+                            </h3>
+                            <div className="mt-1 flex items-center gap-3">
+                              <span className="flex items-center gap-1 text-sm text-gray-500">
+                                <Clock className="h-3 w-3" />
+                                {format(
+                                  new Date(booking.class.startTime),
+                                  'EEEE d MMM · HH:mm',
+                                  { locale: es }
+                                )}
+                              </span>
+                              <span className="flex items-center gap-1 text-sm text-gray-500">
+                                <User className="h-3 w-3" />
+                                {booking.class.instructor.user.name}
+                              </span>
+                            </div>
                           </div>
                         </div>
+
+                        <div className="flex items-center gap-3">
+                          <Badge
+                            variant="secondary"
+                            style={{
+                              backgroundColor:
+                                booking.class.classType.color + '20',
+                              color: booking.class.classType.color,
+                            }}
+                          >
+                            {booking.class.classType.name}
+                          </Badge>
+                          {canCancel && (
+                            <Link
+                              href={`/clases?cancelar=${booking.id}`}
+                              className="text-sm font-medium text-red-500 hover:underline"
+                            >
+                              Cancelar
+                            </Link>
+                          )}
+                        </div>
                       </div>
-                      <Badge
-                        variant="secondary"
-                        style={{
-                          backgroundColor: booking.class.classType.color + '20',
-                          color: booking.class.classType.color,
-                        }}
-                      >
-                        {booking.class.classType.name}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </div>
