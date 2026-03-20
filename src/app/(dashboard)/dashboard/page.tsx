@@ -158,7 +158,7 @@ export default async function DashboardPage() {
             </Card>
           ) : (
             <div className="space-y-3">
-              {upcomingBookings.map((booking) => {
+              {upcomingBookings.map((booking: (typeof upcomingBookings)[0]) => {
                 const twoHoursBefore = new Date(booking.class.startTime);
                 twoHoursBefore.setHours(twoHoursBefore.getHours() - 2);
                 const canCancel = new Date() < twoHoursBefore;
