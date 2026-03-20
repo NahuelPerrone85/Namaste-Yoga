@@ -12,7 +12,7 @@ export async function GET() {
 
     const bookings = await db.booking.findMany({
       where: {
-        userId: session.user.id,
+        userId: session.user!.id,
         status: 'CONFIRMED',
       },
       include: {
@@ -94,7 +94,7 @@ export async function POST(req: Request) {
     const existingBooking = await db.booking.findUnique({
       where: {
         userId_classId: {
-          userId: session.user.id,
+          userId: session.user!.id,
           classId,
         },
       },
@@ -119,7 +119,7 @@ export async function POST(req: Request) {
 
     const booking = await db.booking.create({
       data: {
-        userId: session.user.id,
+        userId: session.user!.id,
         classId,
         status: 'CONFIRMED',
       },

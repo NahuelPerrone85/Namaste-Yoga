@@ -28,7 +28,7 @@ export async function DELETE(
     }
 
     // Verificar que la reserva es del usuario
-    if (booking.userId !== session.user.id) {
+    if (booking.userId !== session.user!.id) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
