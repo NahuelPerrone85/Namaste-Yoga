@@ -11,14 +11,16 @@ import { Badge } from '@/components/ui/badge';
 export default async function DashboardPage() {
   const session = await auth();
 
-  if (!session) {
+  if (!session || !session.user) {
     redirect('/login');
   }
+
+  const userId = session.user.id as string;
 
   // Obtener próximas reservas confirmadas
   const upcomingBookings = await db.booking.findMany({
     where: {
-      userId: session.user.id,
+      userId: userId,
       status: 'CONFIRMED',
       class: {
         startTime: { gte: new Date() },
@@ -44,7 +46,7 @@ export default async function DashboardPage() {
   // Membresía activa
   const activeMembership = await db.userMembership.findFirst({
     where: {
-      userId: session.user.id,
+      userId: userId,
       isActive: true,
       endDate: { gte: new Date() },
     },
@@ -54,7 +56,7 @@ export default async function DashboardPage() {
   // Total reservas confirmadas futuras
   const totalBookings = await db.booking.count({
     where: {
-      userId: session.user.id,
+      userId: userId,
       status: 'CONFIRMED',
       class: {
         startTime: { gte: new Date() },

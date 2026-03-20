@@ -7,10 +7,11 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
 
-    if (!session) {
+    if (!session || !session.user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
+    const userId = session.user.id as string;
     const { membershipId } = await req.json();
 
     const membership = await db.membership.findUnique({
@@ -25,7 +26,6 @@ export async function POST(req: Request) {
     }
 
     const checkoutSession = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
       line_items: [
         {
           price: membership.stripePriceId,
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       success_url: `${process.env.NEXTAUTH_URL}/dashboard?success=true`,
       cancel_url: `${process.env.NEXTAUTH_URL}/precios?cancelled=true`,
       metadata: {
-        userId: session.user.id,
+        userId,
         membershipId: membership.id,
       },
     });
