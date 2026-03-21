@@ -63,29 +63,29 @@
 
 ### 2.1 Auth.js v5
 
-- [ ] Configurar `src/lib/auth.ts`
-- [ ] Provider Google OAuth
-- [ ] Provider Email (magic link)
-- [ ] Guardar sesión en base de datos
+- [x] Configurar `src/lib/auth.ts`
+- [x] Provider Google OAuth
+- [x] Provider Email (magic link)
+- [x] Guardar sesión en base de datos
 
 ### 2.2 Google OAuth
 
-- [ ] Crear proyecto en Google Cloud Console
-- [ ] Obtener CLIENT_ID y CLIENT_SECRET
-- [ ] Configurar redirect URIs
+- [x] Crear proyecto en Google Cloud Console
+- [x] Obtener CLIENT_ID y CLIENT_SECRET
+- [x] Configurar redirect URIs
 
 ### 2.3 Roles y permisos (RBAC)
 
-- [ ] Roles: `ADMIN`, `INSTRUCTOR`, `MEMBER`
-- [ ] Middleware de protección de rutas
-- [ ] Rutas protegidas: `/dashboard`, `/admin`
-- [ ] Rutas públicas: `/`, `/login`, `/precios`
+- [x] Roles: `ADMIN`, `INSTRUCTOR`, `MEMBER`
+- [x] Middleware de protección de rutas
+- [x] Rutas protegidas: `/dashboard`, `/admin`
+- [x] Rutas públicas: `/`, `/login`, `/precios`
 
 ### 2.4 Páginas de Auth
 
-- [ ] Página de login (`/login`)
-- [ ] Página de registro (`/register`)
-- [ ] Página de perfil (`/dashboard/perfil`)
+- [x] Página de login (`/login`)
+- [x] Página de registro (`/register`)
+- [x] Página de perfil (`/dashboard/perfil`)
 
 ---
 
@@ -95,38 +95,38 @@
 
 ### 3.1 Calendario de clases
 
-- [ ] Vista semanal de clases (tipo AimHarder)
-- [ ] Filtros: por tipo de clase, instructor, horario
-- [ ] Card de clase: nombre, instructor, hora, plazas disponibles
-- [ ] Indicador de plazas: disponible / pocas plazas / lleno
+- [x] Vista semanal de clases (tipo AimHarder)
+- [x] Filtros: por tipo de clase, instructor, horario
+- [x] Card de clase: nombre, instructor, hora, plazas disponibles
+- [x] Indicador de plazas: disponible / pocas plazas / lleno
 
 ### 3.2 Sistema de reservas
 
-- [ ] API: `POST /api/bookings` — crear reserva
-- [ ] API: `DELETE /api/bookings/:id` — cancelar reserva
-- [ ] API: `GET /api/bookings` — mis reservas
-- [ ] Validación: no doble reserva
-- [ ] Validación: no reservar clase pasada
-- [ ] Lista de espera cuando la clase está llena
+- [x] API: `POST /api/bookings` — crear reserva
+- [x] API: `DELETE /api/bookings/:id` — cancelar reserva
+- [x] API: `GET /api/bookings` — mis reservas
+- [x] Validación: no doble reserva
+- [x] Validación: no reservar clase pasada
+- [x] Lista de espera cuando la clase está llena
 
 ### 3.3 Tiempo real con Supabase
 
-- [ ] Plazas disponibles actualizadas en tiempo real
-- [ ] Sin necesidad de recargar la página
+- [x] Plazas disponibles actualizadas en tiempo real
+- [x] Sin necesidad de recargar la página
 
 ### 3.4 Mis reservas
 
-- [ ] Página `/dashboard/reservas`
-- [ ] Próximas clases
-- [ ] Historial de clases pasadas
-- [ ] Botón cancelar con política (hasta 2h antes)
+- [x] Página `/dashboard/reservas`
+- [x] Próximas clases
+- [x] Historial de clases pasadas
+- [x] Botón cancelar con política (hasta 2h antes)
 
 ### 3.5 Notificaciones por email
 
-- [ ] Configurar Resend
-- [ ] Email de confirmación al reservar
-- [ ] Email de recordatorio 1h antes de la clase
-- [ ] Email de cancelación
+- [x] Configurar Resend
+- [x] Email de confirmación al reservar
+- [x] Email de recordatorio 1h antes de la clase
+- [x] Email de cancelación
 
 ---
 
@@ -136,30 +136,30 @@
 
 ### 4.1 Configurar Stripe
 
-- [ ] Crear cuenta en Stripe
-- [ ] Instalar librería: `npm install stripe @stripe/stripe-js`
-- [ ] Configurar variables de entorno de Stripe
+- [x] Crear cuenta en Stripe
+- [x] Instalar librería: `npm install stripe @stripe/stripe-js`
+- [x] Configurar variables de entorno de Stripe
 
 ### 4.2 Planes de membresía
 
-- [ ] Plan Básico: 8 clases/mes
-- [ ] Plan Premium: clases ilimitadas
-- [ ] Plan Trimestral: descuento 15%
-- [ ] Plan Anual: descuento 25%
+- [x] Plan Básico: 8 clases/mes
+- [x] Plan Premium: clases ilimitadas
+- [x] Plan Trimestral: descuento 15%
+- [x] Plan Anual: descuento 25%
 
 ### 4.3 Flujo de pago
 
-- [ ] Página de precios (`/precios`)
-- [ ] Checkout con Stripe
-- [ ] Webhook: activar membresía al pagar
-- [ ] Webhook: cancelar membresía al expirar
-- [ ] Portal de cliente Stripe (cambiar plan, ver facturas)
+- [x] Página de precios (`/precios`)
+- [x] Checkout con Stripe
+- [x] Webhook: activar membresía al pagar
+- [x] Webhook: cancelar membresía al expirar
+- [x] Portal de cliente Stripe (cambiar plan, ver facturas)
 
 ### 4.4 Guard de reservas
 
-- [ ] Verificar membresía activa antes de reservar
-- [ ] Contador de clases restantes si es plan limitado
-- [ ] Mensaje claro si membresía expirada
+- [x] Verificar membresía activa antes de reservar
+- [x] Contador de clases restantes si es plan limitado
+- [x] Mensaje claro si membresía expirada
 
 ---
 
@@ -169,28 +169,28 @@
 
 ### 5.1 Dashboard admin (`/admin`)
 
-- [ ] Resumen: alumnos activos, ingresos, clases hoy
-- [ ] Gráfico de reservas por semana
-- [ ] Gráfico de ingresos por mes
+- [x] Resumen: alumnos activos, ingresos, clases hoy
+- [x] Gráfico de reservas por semana
+- [x] Gráfico de ingresos por mes
 
 ### 5.2 Gestión de clases
 
-- [ ] Crear clase nueva
-- [ ] Editar clase existente
-- [ ] Cancelar clase (notifica a alumnos)
-- [ ] Ver lista de alumnos apuntados
+- [x] Crear clase nueva
+- [x] Editar clase existente
+- [x] Cancelar clase (notifica a alumnos)
+- [x] Ver lista de alumnos apuntados
 
 ### 5.3 Gestión de alumnos
 
-- [ ] Lista de todos los alumnos
-- [ ] Ver perfil y membresía de cada alumno
-- [ ] Activar/desactivar cuenta
+- [x] Lista de todos los alumnos
+- [x] Ver perfil y membresía de cada alumno
+- [x] Activar/desactivar cuenta
 
 ### 5.4 Gestión de instructores
 
-- [ ] Añadir instructor
-- [ ] Asignar clases a instructor
-- [ ] Ver horario del instructor
+- [x] Añadir instructor
+- [x] Asignar clases a instructor
+- [x] Ver horario del instructor
 
 ---
 
