@@ -3,7 +3,14 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { Calendar, Home, LogOut, User, CreditCard } from 'lucide-react';
+import {
+  Calendar,
+  CreditCard,
+  Home,
+  LogOut,
+  Settings,
+  User,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Navbar() {
@@ -16,6 +23,11 @@ export default function Navbar() {
     { href: '/precios', label: 'Precios', icon: CreditCard },
     { href: '/perfil', label: 'Perfil', icon: User },
   ];
+
+  const adminLinks = [{ href: '/admin', label: 'Admin', icon: Settings }];
+
+  const allLinks =
+    session?.user?.role === 'ADMIN' ? [...links, ...adminLinks] : links;
 
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white">
@@ -31,7 +43,7 @@ export default function Navbar() {
 
           {/* Links */}
           <div className="flex items-center gap-1">
-            {links.map(({ href, label, icon: Icon }) => (
+            {allLinks.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
                 href={href}
