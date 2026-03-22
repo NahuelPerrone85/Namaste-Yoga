@@ -17,10 +17,9 @@ export default async function DashboardPage() {
 
   const userId = session.user.id as string;
 
-  // Obtener próximas reservas confirmadas
   const upcomingBookings = await db.booking.findMany({
     where: {
-      userId: userId,
+      userId,
       status: 'CONFIRMED',
       class: {
         startTime: { gte: new Date() },
@@ -43,20 +42,18 @@ export default async function DashboardPage() {
     take: 5,
   });
 
-  // Membresía activa
   const activeMembership = await db.userMembership.findFirst({
     where: {
-      userId: userId,
+      userId,
       isActive: true,
       endDate: { gte: new Date() },
     },
     include: { membership: true },
   });
 
-  // Total reservas confirmadas futuras
   const totalBookings = await db.booking.count({
     where: {
-      userId: userId,
+      userId,
       status: 'CONFIRMED',
       class: {
         startTime: { gte: new Date() },
@@ -67,20 +64,18 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="mx-auto max-w-4xl">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            🧘 Bienvenido, {session.user?.name}!
+            Bienvenido, {session.user?.name}!
           </h1>
           <p className="mt-1 text-gray-500">Panel de control de Namaste Yoga</p>
         </div>
 
-        {/* Stats */}
         <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
           <Card>
             <CardContent className="p-6">
               <h2 className="mb-1 text-sm font-medium text-gray-500">
-                Próximas clases
+                Proximas clases
               </h2>
               <p className="text-3xl font-bold text-purple-600">
                 {totalBookings}
@@ -92,15 +87,15 @@ export default async function DashboardPage() {
           <Card>
             <CardContent className="p-6">
               <h2 className="mb-1 text-sm font-medium text-gray-500">
-                Membresía
+                Membresia
               </h2>
               <p className="text-xl font-bold text-purple-600">
-                {activeMembership ? activeMembership.membership.name : '—'}
+                {activeMembership ? activeMembership.membership.name : '-'}
               </p>
               <p className="mt-1 text-sm text-gray-400">
                 {activeMembership
                   ? `Expira: ${format(activeMembership.endDate, 'd MMM yyyy', { locale: es })}`
-                  : 'Sin membresía activa'}
+                  : 'Sin membresia activa'}
               </p>
             </CardContent>
           </Card>
@@ -108,7 +103,7 @@ export default async function DashboardPage() {
           <Card>
             <CardContent className="p-6">
               <h2 className="mb-1 text-sm font-medium text-gray-500">
-                Próxima clase
+                Proxima clase
               </h2>
               <p className="text-xl font-bold text-purple-600">
                 {upcomingBookings[0]
@@ -117,28 +112,27 @@ export default async function DashboardPage() {
                       'd MMM',
                       { locale: es }
                     )
-                  : '—'}
+                  : '-'}
               </p>
               <p className="mt-1 text-sm text-gray-400">
                 {upcomingBookings[0]
                   ? upcomingBookings[0].class.title
-                  : 'Sin clases próximas'}
+                  : 'Sin clases proximas'}
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Próximas clases */}
         <div className="mb-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">
-              Mis próximas clases
+              Mis proximas clases
             </h2>
             <Link
               href="/clases"
               className="text-sm font-medium text-purple-600 hover:underline"
             >
-              Ver calendario →
+              Ver calendario
             </Link>
           </div>
 
@@ -146,7 +140,7 @@ export default async function DashboardPage() {
             <Card>
               <CardContent className="p-8 text-center">
                 <p className="mb-4 text-gray-400">
-                  No tienes clases reservadas próximamente
+                  No tienes clases reservadas proximamente
                 </p>
                 <Link
                   href="/clases"
@@ -183,7 +177,7 @@ export default async function DashboardPage() {
                                 <Clock className="h-3 w-3" />
                                 {format(
                                   new Date(booking.class.startTime),
-                                  'EEEE d MMM · HH:mm',
+                                  'EEEE d MMM HH:mm',
                                   { locale: es }
                                 )}
                               </span>
@@ -194,7 +188,6 @@ export default async function DashboardPage() {
                             </div>
                           </div>
                         </div>
-
                         <div className="flex items-center gap-3">
                           <Badge
                             variant="secondary"
