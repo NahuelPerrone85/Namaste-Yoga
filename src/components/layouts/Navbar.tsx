@@ -27,7 +27,9 @@ export default function Navbar() {
   const adminLinks = [{ href: '/admin', label: 'Admin', icon: Settings }];
 
   const allLinks =
-    session?.user?.role === 'ADMIN' ? [...links, ...adminLinks] : links;
+    (session?.user as { role?: string })?.role === 'ADMIN'
+      ? [...links, ...adminLinks]
+      : links;
 
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white">

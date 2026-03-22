@@ -6,9 +6,11 @@ import PricingCards from '@/components/booking/PricingCards';
 export default async function PreciosPage() {
   const session = await auth();
 
-  if (!session) {
+  if (!session || !session.user) {
     redirect('/login');
   }
+
+  const userId = session.user.id as string;
 
   const memberships = await db.membership.findMany({
     orderBy: { price: 'asc' },
@@ -16,7 +18,7 @@ export default async function PreciosPage() {
 
   const activeMembership = await db.userMembership.findFirst({
     where: {
-      userId: session.user.id,
+      userId: userId,
       isActive: true,
       endDate: { gte: new Date() },
     },

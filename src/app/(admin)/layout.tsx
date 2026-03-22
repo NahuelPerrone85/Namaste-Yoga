@@ -13,7 +13,7 @@ export default async function AdminLayout({
     redirect('/login');
   }
 
-  if (session.user.role !== 'ADMIN') {
+  if ((session.user as { role?: string }).role !== 'ADMIN') {
     redirect('/dashboard');
   }
 

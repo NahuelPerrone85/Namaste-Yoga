@@ -9,9 +9,11 @@ export async function DELETE(
   try {
     const session = await auth();
 
-    if (!session) {
+    if (!session || !session.user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
+
+    const userId = session.user.id as string;
 
     const { id } = await params;
 
@@ -28,7 +30,7 @@ export async function DELETE(
     }
 
     // Verificar que la reserva es del usuario
-    if (booking.userId !== session.user.id) {
+    if (booking.userId !== userId) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 

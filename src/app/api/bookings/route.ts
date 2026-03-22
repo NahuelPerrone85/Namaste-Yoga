@@ -6,13 +6,15 @@ export async function GET() {
   try {
     const session = await auth();
 
-    if (!session) {
+    if (!session || !session.user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
+    const userId = session.user.id as string;
+
     const bookings = await db.booking.findMany({
       where: {
-        userId: session.user.id,
+        userId: userId,
         status: 'CONFIRMED',
       },
       include: {
@@ -48,9 +50,11 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
 
-    if (!session) {
+    if (!session || !session.user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
+
+    const userId = session.user.id as string;
 
     const { classId } = await req.json();
 
@@ -94,7 +98,7 @@ export async function POST(req: Request) {
     const existingBooking = await db.booking.findUnique({
       where: {
         userId_classId: {
-          userId: session.user.id,
+          userId: userId,
           classId,
         },
       },
@@ -119,7 +123,7 @@ export async function POST(req: Request) {
 
     const booking = await db.booking.create({
       data: {
-        userId: session.user.id,
+        userId: userId,
         classId,
         status: 'CONFIRMED',
       },
