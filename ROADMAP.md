@@ -3,19 +3,16 @@
 ## Stack Tecnológico
 
 - **Frontend**: Next.js 15 + TypeScript + Tailwind CSS + shadcn/ui
-- **Backend**: Next.js API Routes + tRPC
+- **Backend**: Next.js API Routes
 - **Base de datos**: PostgreSQL (Supabase) + Prisma ORM
-- **Auth**: Auth.js v5 (Google OAuth + Email)
+- **Autenticación**: Auth.js v5
 - **Pagos**: Stripe
 - **Deploy**: Vercel
-- **Emails**: Resend
-- **Cache**: Upstash Redis
+- **Testing**: Vitest + Testing Library
 
 ---
 
 ## ✅ FASE 0 — Setup & Configuración
-
-> Objetivo: Proyecto base listo, conectado y desplegado
 
 - [x] Crear proyecto Next.js 15 con TypeScript + Tailwind
 - [x] Instalar dependencias: Prisma v5, Auth.js, Zod, date-fns
@@ -28,284 +25,154 @@
 
 ---
 
-## 🗄️ FASE 1 — Base de Datos & Modelos
-
-> Objetivo: Schema completo de la BD con todas las relaciones
-
-### 1.1 Diseñar el schema de Prisma
+## ✅ FASE 1 — Base de Datos & Modelos
 
 - [x] Modelo `User` — alumnos, instructores y admins
-- [x] Modelo `Studio` — el gimnasio/estudio de yoga
 - [x] Modelo `Instructor` — perfil del instructor
 - [x] Modelo `ClassType` — tipos de clase (Hatha, Vinyasa, Yin...)
 - [x] Modelo `Class` — clase concreta con fecha, hora y plazas
 - [x] Modelo `Booking` — reserva de un alumno a una clase
-- [x] Modelo `Membership` — tipos de membresía (mensual, trimestral...)
+- [x] Modelo `Membership` — tipos de membresía
 - [x] Modelo `UserMembership` — membresía activa de un usuario
 - [x] Modelo `Payment` — registro de pagos
-
-### 1.2 Migraciones y datos de prueba
-
-- [x] Ejecutar primera migración (`prisma migrate dev`)
+- [x] Ejecutar primera migración
 - [x] Crear archivo `prisma/seed.ts` con datos de prueba
-- [x] Poblar la BD: 3 instructores, 10 clases, 5 usuarios
-
-### 1.3 Cliente Prisma
-
+- [x] Poblar la BD: 2 instructores, 5 clases, 4 membresías
 - [x] Crear `src/lib/db.ts` — cliente Prisma singleton
-- [x] Verificar conexión desde Next.js
 
 ---
 
-## 🔐 FASE 2 — Autenticación & Autorización
+## ✅ FASE 2 — Autenticación & Autorización
 
-> Objetivo: Login seguro con roles de usuario
-
-### 2.1 Auth.js v5
-
-- [x] Configurar `src/lib/auth.ts`
-- [x] Provider Google OAuth
-- [x] Provider Email (magic link)
-- [x] Guardar sesión en base de datos
-
-### 2.2 Google OAuth
-
-- [x] Crear proyecto en Google Cloud Console
-- [x] Obtener CLIENT_ID y CLIENT_SECRET
-- [x] Configurar redirect URIs
-
-### 2.3 Roles y permisos (RBAC)
-
-- [x] Roles: `ADMIN`, `INSTRUCTOR`, `MEMBER`
+- [x] Configurar Auth.js v5 con email/contraseña
+- [x] Registro de usuarios con contraseña hasheada (bcrypt)
+- [x] Login seguro con JWT
 - [x] Middleware de protección de rutas
-- [x] Rutas protegidas: `/dashboard`, `/admin`
-- [x] Rutas públicas: `/`, `/login`, `/precios`
-
-### 2.4 Páginas de Auth
-
-- [x] Página de login (`/login`)
-- [x] Página de registro (`/register`)
-- [x] Página de perfil (`/dashboard/perfil`)
+- [x] Roles: ADMIN, INSTRUCTOR, MEMBER
+- [x] Página de login
+- [x] Página de registro
+- [x] Dashboard protegido
 
 ---
 
-## 📅 FASE 3 — Core: Reservas de Clases
+## ✅ FASE 3 — Core: Reservas de Clases
 
-> Objetivo: Un alumno puede ver, reservar y cancelar clases
-
-### 3.1 Calendario de clases
-
-- [x] Vista semanal de clases (tipo AimHarder)
-- [x] Filtros: por tipo de clase, instructor, horario
+- [x] Calendario semanal de clases con navegación
 - [x] Card de clase: nombre, instructor, hora, plazas disponibles
 - [x] Indicador de plazas: disponible / pocas plazas / lleno
-
-### 3.2 Sistema de reservas
-
-- [x] API: `POST /api/bookings` — crear reserva
-- [x] API: `DELETE /api/bookings/:id` — cancelar reserva
-- [x] API: `GET /api/bookings` — mis reservas
-- [x] Validación: no doble reserva
-- [x] Validación: no reservar clase pasada
-- [x] Lista de espera cuando la clase está llena
-
-### 3.3 Tiempo real con Supabase
-
-- [x] Plazas disponibles actualizadas en tiempo real
-- [x] Sin necesidad de recargar la página
-
-### 3.4 Mis reservas
-
-- [x] Página `/dashboard/reservas`
-- [x] Próximas clases
-- [x] Historial de clases pasadas
-- [x] Botón cancelar con política (hasta 2h antes)
-
-### 3.5 Notificaciones por email
-
-- [x] Configurar Resend
-- [x] Email de confirmación al reservar
-- [x] Email de recordatorio 1h antes de la clase
-- [x] Email de cancelación
+- [x] API: crear reserva con validaciones
+- [x] API: cancelar reserva con política de 2h
+- [x] Re-reservar clase cancelada
+- [x] Dashboard con próximas reservas
+- [x] Notificación visual al reservar/cancelar
 
 ---
 
-## 💳 FASE 4 — Pagos & Membresías (Stripe)
+## ✅ FASE 4 — Pagos & Membresías (Stripe)
 
-> Objetivo: Sistema de membresías con pago recurrente
-
-### 4.1 Configurar Stripe
-
-- [x] Crear cuenta en Stripe
-- [x] Instalar librería: `npm install stripe @stripe/stripe-js`
-- [x] Configurar variables de entorno de Stripe
-
-### 4.2 Planes de membresía
-
-- [x] Plan Básico: 8 clases/mes
-- [x] Plan Premium: clases ilimitadas
-- [x] Plan Trimestral: descuento 15%
-- [x] Plan Anual: descuento 25%
-
-### 4.3 Flujo de pago
-
-- [x] Página de precios (`/precios`)
+- [x] 4 planes de membresía: Básico, Premium, Trimestral, Anual
+- [x] Página de precios con cards
 - [x] Checkout con Stripe
-- [x] Webhook: activar membresía al pagar
-- [x] Webhook: cancelar membresía al expirar
-- [x] Portal de cliente Stripe (cambiar plan, ver facturas)
-
-### 4.4 Guard de reservas
-
-- [x] Verificar membresía activa antes de reservar
-- [x] Contador de clases restantes si es plan limitado
-- [x] Mensaje claro si membresía expirada
+- [x] Webhook activa membresía automáticamente
+- [x] Dashboard muestra membresía activa
 
 ---
 
-## 🛠️ FASE 5 — Panel de Administración
+## ✅ FASE 5 — Panel de Administración
 
-> Objetivo: El admin puede gestionar todo desde un panel
-
-### 5.1 Dashboard admin (`/admin`)
-
-- [x] Resumen: alumnos activos, ingresos, clases hoy
-- [x] Gráfico de reservas por semana
-- [x] Gráfico de ingresos por mes
-
-### 5.2 Gestión de clases
-
-- [x] Crear clase nueva
-- [x] Editar clase existente
-- [x] Cancelar clase (notifica a alumnos)
-- [x] Ver lista de alumnos apuntados
-
-### 5.3 Gestión de alumnos
-
-- [x] Lista de todos los alumnos
-- [x] Ver perfil y membresía de cada alumno
-- [x] Activar/desactivar cuenta
-
-### 5.4 Gestión de instructores
-
-- [x] Añadir instructor
-- [x] Asignar clases a instructor
-- [x] Ver horario del instructor
+- [x] Dashboard admin con stats: alumnos, reservas, ingresos
+- [x] Clases del día con ocupación
+- [x] Últimas reservas en tiempo real
+- [x] Acceso protegido solo para rol ADMIN
+- [x] Link en navbar solo visible para admins
 
 ---
 
-## 🧪 FASE 6 — Testing & Calidad
+## ✅ PERFIL DE USUARIO
 
-> Objetivo: App robusta y sin bugs en producción
-
-### 6.1 Tests unitarios (Vitest)
-
-- [ ] Instalar Vitest + Testing Library
-- [ ] Tests de servicios: booking, membership
-- [ ] Tests de validaciones Zod
-- [ ] Tests de utilidades
-
-### 6.2 Tests E2E (Playwright)
-
-- [ ] Instalar Playwright
-- [ ] Test: flujo completo de reserva
-- [ ] Test: flujo de pago con Stripe
-- [ ] Test: login y logout
-
-### 6.3 CI/CD con GitHub Actions
-
-- [ ] Crear `.github/workflows/ci.yml`
-- [ ] En cada PR: lint + tests automáticos
-- [ ] En merge a main: deploy automático a Vercel
+- [x] Página de perfil con foto, nombre y bio
+- [x] Editar nombre, bio y foto de perfil
+- [x] Estadísticas: total clases y clases asistidas
+- [x] Historial de clases pasadas
+- [x] Membresía activa con fecha de expiración
 
 ---
 
-## 🔒 FASE 7 — Seguridad & Producción
+## ✅ SEGURIDAD
 
-> Objetivo: App segura lista para usuarios reales
+- [x] Security headers en next.config.ts
+- [x] HTTPS forzado (HSTS)
+- [x] Protección contra clickjacking (X-Frame-Options)
+- [x] Protección XSS (X-Content-Type-Options)
+- [x] Middleware de autenticación en rutas protegidas
+- [x] Validación de inputs con Zod
+- [x] Contraseñas hasheadas con bcrypt
 
-### 7.1 Seguridad
+---
 
-- [ ] Instalar Upstash Redis
-- [ ] Rate limiting en todos los endpoints
-- [ ] Headers de seguridad en `next.config.ts`
-- [ ] Protección CSRF
-- [ ] Sanitización de inputs
-- [ ] Row Level Security (RLS) en Supabase
+## ✅ TESTING
 
-### 7.2 Performance
-
-- [ ] Optimización de imágenes con Next/Image
-- [ ] Lazy loading de componentes pesados
-- [ ] Caché de consultas frecuentes con Redis
-
-### 7.3 Monitoreo
-
-- [ ] Configurar Sentry (errores en producción)
-- [ ] Configurar Posthog (analytics)
-- [ ] Alertas de errores críticos
-
-### 7.4 Documentación final
-
-- [ ] README.md profesional con screenshots
-- [ ] Guía de instalación local
-- [ ] Documentación de la API
-- [ ] CONTRIBUTING.md
+- [x] Configurar Vitest + Testing Library
+- [x] Tests unitarios: lógica de cancelación
+- [x] Tests unitarios: plazas disponibles
+- [x] Tests de componentes: ClassCard
+- [x] 12 tests pasando
 
 ---
 
 ## 📋 Convención de Commits
 
-\`\`\`
-feat: nueva funcionalidad
-fix: corrección de bug
-chore: configuración, dependencias
-docs: documentación
-style: formato, sin cambio de lógica
+```
+feat:     nueva funcionalidad
+fix:      corrección de bug
+chore:    configuración, dependencias
+docs:     documentación
+style:    formato, sin cambio de lógica
 refactor: refactorización de código
-test: añadir o modificar tests
-\`\`\`
+test:     añadir o modificar tests
+```
 
 ## 🌿 Estrategia de Ramas
 
-\`\`\`
-main → producción (solo merge desde develop)
-develop → integración
-feature/xxx → nueva funcionalidad
-fix/xxx → corrección de bug
-\`\`\`
+```
+main          → producción
+develop       → integración
+feature/xxx   → nueva funcionalidad
+fix/xxx       → corrección de bug
+docs/xxx      → documentación
+```
 
 ## 📁 Estructura de Carpetas
 
-\`\`\`
+```
 namaste-yoga/
-├── .github/workflows/ → CI/CD
+├── .github/workflows/     → CI/CD
 ├── prisma/
-│ ├── schema.prisma → modelos de BD
-│ ├── migrations/ → historial de cambios
-│ └── seed.ts → datos de prueba
+│   ├── schema.prisma      → modelos de BD
+│   ├── migrations/        → historial de cambios
+│   └── seed.ts            → datos de prueba
+├── scripts/
+│   └── setup-stripe.ts    → configurar productos Stripe
 ├── src/
-│ ├── app/
-│ │ ├── (auth)/ → login, register
-│ │ ├── (dashboard)/ → área privada alumno
-│ │ ├── (admin)/ → panel administrador
-│ │ └── api/ → endpoints API
-│ ├── components/
-│ │ ├── ui/ → shadcn/ui base
-│ │ ├── booking/ → calendario, cards
-│ │ ├── admin/ → tablas, gestión
-│ │ └── layouts/ → navbar, sidebar
-│ ├── lib/
-│ │ ├── db.ts → cliente Prisma
-│ │ ├── auth.ts → configuración Auth.js
-│ │ ├── stripe.ts → cliente Stripe
-│ │ └── validations.ts → schemas Zod
-│ ├── hooks/ → custom hooks
-│ └── types/ → tipos TypeScript
-├── tests/
-│ ├── unit/ → Vitest
-│ └── e2e/ → Playwright
-├── .env → variables locales (no subir)
-├── .env.example → plantilla (sí subir)
-└── ROADMAP.md → esta guía
-\`\`\`
+│   ├── app/
+│   │   ├── (auth)/        → login, register
+│   │   ├── (dashboard)/   → dashboard, clases, precios, perfil
+│   │   ├── (admin)/       → panel administrador
+│   │   └── api/           → endpoints API
+│   ├── components/
+│   │   ├── booking/       → calendario, cards, precios
+│   │   ├── layouts/       → navbar, session provider
+│   │   ├── profile/       → formulario de perfil
+│   │   └── ui/            → shadcn/ui base
+│   ├── lib/
+│   │   ├── auth.ts        → configuración Auth.js
+│   │   ├── db.ts          → cliente Prisma
+│   │   └── stripe.ts      → cliente Stripe
+│   ├── tests/
+│   │   └── unit/          → tests unitarios Vitest
+│   └── types/             → tipos TypeScript
+├── .env                   → variables locales (no subir)
+├── .env.example           → plantilla
+├── ROADMAP.md             → esta guía
+└── vitest.config.ts       → configuración tests
+```
