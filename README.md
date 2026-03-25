@@ -8,7 +8,7 @@
 
 Aplicación web full-stack para la gestión y reserva de clases de yoga. Desarrollada con las tecnologías más demandadas del mercado en 2026.
 
-🌐 **Demo en vivo**: [namaste-yoga.vercel.app](https://namaste-yoga.vercel.app)
+🌐 **Demo en vivo**: https://namaste-yoga-five.vercel.app/
 
 ---
 

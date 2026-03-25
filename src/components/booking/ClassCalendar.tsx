@@ -54,7 +54,10 @@ export default function ClassCalendar() {
   }, [currentWeekStart]);
 
   const handleBook = async (classId: string) => {
-    if (!session) return;
+    if (!session) {
+      alert('Debes iniciar sesión para reservar');
+      return;
+    }
     setActionLoading(true);
     try {
       const res = await fetch('/api/bookings', {
@@ -64,6 +67,13 @@ export default function ClassCalendar() {
       });
       const data = await res.json();
       if (!res.ok) {
+        if (res.status === 403) {
+          // Redirigir a precios si no tiene membresía
+          if (confirm(`${data.error}. ¿Quieres ver los planes de membresía?`)) {
+            window.location.href = '/precios';
+          }
+          return;
+        }
         alert(data.error);
         return;
       }
