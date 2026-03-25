@@ -14,7 +14,7 @@ export async function GET() {
 
     const bookings = await db.booking.findMany({
       where: {
-        userId: userId,
+        userId,
         status: 'CONFIRMED',
       },
       include: {
@@ -22,9 +22,7 @@ export async function GET() {
           include: {
             instructor: {
               include: {
-                user: {
-                  select: { name: true },
-                },
+                user: { select: { name: true } },
               },
             },
             classType: true,
@@ -55,7 +53,6 @@ export async function POST(req: Request) {
     }
 
     const userId = session.user.id as string;
-
     const { classId } = await req.json();
 
     if (!classId) {
@@ -65,12 +62,39 @@ export async function POST(req: Request) {
       );
     }
 
+    // Verificar que el usuario tiene membresía activa
+    const activeMembership = await db.userMembership.findFirst({
+      where: {
+        userId,
+        isActive: true,
+        endDate: { gte: new Date() },
+      },
+      include: { membership: true },
+    });
+
+    if (!activeMembership) {
+      return NextResponse.json(
+        { error: 'Necesitas una membresía activa para reservar clases' },
+        { status: 403 }
+      );
+    }
+
+    // Verificar límite de clases si el plan tiene límite
+    if (
+      activeMembership.membership.classLimit !== null &&
+      activeMembership.classesUsed >= activeMembership.membership.classLimit
+    ) {
+      return NextResponse.json(
+        { error: 'Has alcanzado el límite de clases de tu membresía' },
+        { status: 403 }
+      );
+    }
+
+    // Verificar que la clase existe
     const yogaClass = await db.class.findUnique({
       where: { id: classId },
       include: {
-        bookings: {
-          where: { status: 'CONFIRMED' },
-        },
+        bookings: { where: { status: 'CONFIRMED' } },
       },
     });
 
@@ -95,12 +119,10 @@ export async function POST(req: Request) {
       );
     }
 
+    // Verificar reserva existente
     const existingBooking = await db.booking.findUnique({
       where: {
-        userId_classId: {
-          userId: userId,
-          classId,
-        },
+        userId_classId: { userId, classId },
       },
     });
 
@@ -112,22 +134,39 @@ export async function POST(req: Request) {
         );
       }
 
-      // Si estaba cancelada, la reactivamos
+      // Reactivar reserva cancelada
       const updated = await db.booking.update({
         where: { id: existingBooking.id },
         data: { status: 'CONFIRMED' },
       });
 
+      // Actualizar contador
+      if (activeMembership.membership.classLimit !== null) {
+        await db.userMembership.update({
+          where: { id: activeMembership.id },
+          data: { classesUsed: { increment: 1 } },
+        });
+      }
+
       return NextResponse.json(updated, { status: 200 });
     }
 
+    // Crear nueva reserva
     const booking = await db.booking.create({
       data: {
-        userId: userId,
+        userId,
         classId,
         status: 'CONFIRMED',
       },
     });
+
+    // Actualizar contador de clases usadas
+    if (activeMembership.membership.classLimit !== null) {
+      await db.userMembership.update({
+        where: { id: activeMembership.id },
+        data: { classesUsed: { increment: 1 } },
+      });
+    }
 
     return NextResponse.json(booking, { status: 201 });
   } catch (error) {
