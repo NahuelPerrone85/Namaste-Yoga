@@ -10,6 +10,7 @@ import {
   LogOut,
   Settings,
   User,
+  Users,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -20,6 +21,7 @@ export default function Navbar() {
   const links = [
     { href: '/dashboard', label: 'Inicio', icon: Home },
     { href: '/clases', label: 'Clases', icon: Calendar },
+    { href: '/instructores', label: 'Instructores', icon: Users },
     { href: '/precios', label: 'Precios', icon: CreditCard },
     { href: '/perfil', label: 'Perfil', icon: User },
   ];
