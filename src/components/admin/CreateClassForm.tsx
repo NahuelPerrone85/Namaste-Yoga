@@ -1,0 +1,241 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
+
+interface ClassType {
+  id: string;
+  name: string;
+  color: string;
+}
+
+interface Instructor {
+  id: string;
+  user: { name: string | null };
+}
+
+interface CreateClassFormProps {
+  classTypes: ClassType[];
+  instructors: Instructor[];
+  onClose: () => void;
+}
+
+export default function CreateClassForm({
+  classTypes,
+  instructors,
+  onClose,
+}: CreateClassFormProps) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [date, setDate] = useState('');
+  const [startHour, setStartHour] = useState('09:00');
+  const [duration, setDuration] = useState('60');
+  const [capacity, setCapacity] = useState('10');
+  const [classTypeId, setClassTypeId] = useState(classTypes[0]?.id || '');
+  const [instructorId, setInstructorId] = useState(instructors[0]?.id || '');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const startTime = new Date(`${date}T${startHour}:00`);
+      const endTime = new Date(
+        startTime.getTime() + parseInt(duration) * 60000
+      );
+
+      const res = await fetch('/api/classes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          description,
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+          capacity,
+          classTypeId,
+          instructorId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error);
+        setLoading(false);
+        return;
+      }
+
+      router.refresh();
+      onClose();
+    } catch {
+      setError('Error al crear la clase');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Card className="mb-6">
+      <CardContent className="p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900">Nueva clase</h3>
+          <Button variant="outline" size="sm" onClick={onClose}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Titulo de la clase
+              </label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                placeholder="Ej: Hatha Yoga Mañana"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Tipo de clase
+              </label>
+              <select
+                value={classTypeId}
+                onChange={(e) => setClassTypeId(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                required
+              >
+                {classTypes.map((ct) => (
+                  <option key={ct.id} value={ct.id}>
+                    {ct.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Instructor
+              </label>
+              <select
+                value={instructorId}
+                onChange={(e) => setInstructorId(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                required
+              >
+                {instructors.map((inst) => (
+                  <option key={inst.id} value={inst.id}>
+                    {inst.user.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Fecha
+              </label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Hora de inicio
+              </label>
+              <input
+                type="time"
+                value={startHour}
+                onChange={(e) => setStartHour(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Duracion (minutos)
+              </label>
+              <select
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              >
+                <option value="45">45 min</option>
+                <option value="60">60 min</option>
+                <option value="75">75 min</option>
+                <option value="90">90 min</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Capacidad maxima
+              </label>
+              <input
+                type="number"
+                value={capacity}
+                onChange={(e) => setCapacity(e.target.value)}
+                min="1"
+                max="50"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Descripcion (opcional)
+              </label>
+              <input
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                placeholder="Descripcion breve de la clase"
+              />
+            </div>
+          </div>
+
+          {error && (
+            <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500">
+              {error}
+            </div>
+          )}
+
+          <div className="flex gap-3">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {loading ? 'Creando...' : 'Crear clase'}
+            </Button>
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}

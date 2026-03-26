@@ -6,6 +6,9 @@ import { es } from 'date-fns/locale';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Users, Calendar, CreditCard, TrendingUp } from 'lucide-react';
+import CreateClassButton from '@/components/admin/CreateClassButton';
+import ClassManagerList from '@/components/admin/ClassManagerList';
+import CoachManager from '@/components/admin/CoachManager';
 
 export default async function AdminPage() {
   const session = await auth();
@@ -18,7 +21,6 @@ export default async function AdminPage() {
     redirect('/dashboard');
   }
 
-  // Stats generales
   const totalUsers = await db.user.count({
     where: { role: 'MEMBER' },
   });
@@ -39,7 +41,6 @@ export default async function AdminPage() {
     },
   });
 
-  // Últimas reservas
   const recentBookings = await db.booking.findMany({
     where: { status: 'CONFIRMED' },
     include: {
@@ -59,7 +60,6 @@ export default async function AdminPage() {
     take: 10,
   });
 
-  // Clases de hoy
   const today = new Date();
   const todayStart = new Date(today.setHours(0, 0, 0, 0));
   const todayEnd = new Date(today.setHours(23, 59, 59, 999));
@@ -83,18 +83,69 @@ export default async function AdminPage() {
     orderBy: { startTime: 'asc' },
   });
 
+  const classTypes = await db.classType.findMany();
+  const instructors = await db.instructor.findMany({
+    include: {
+      user: { select: { name: true } },
+    },
+  });
+
+  // Próximas clases para gestionar
+  const upcomingClasses = await db.class.findMany({
+    where: {
+      startTime: { gte: new Date() },
+    },
+    include: {
+      classType: true,
+      instructor: {
+        include: {
+          user: { select: { name: true } },
+        },
+      },
+      bookings: {
+        where: { status: 'CONFIRMED' },
+        select: { id: true },
+      },
+    },
+    orderBy: { startTime: 'asc' },
+    take: 20,
+  });
+  const allInstructors = await db.instructor.findMany({
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          bio: true,
+        },
+      },
+      classes: {
+        where: { status: 'SCHEDULED' },
+        select: { id: true },
+      },
+    },
+  });
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="mx-auto max-w-7xl">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            ⚙️ Panel de Administración
-          </h1>
-          <p className="mt-1 text-gray-500">Bienvenido, {session.user.name}</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Panel de Administracion
+            </h1>
+            <p className="mt-1 text-gray-500">
+              Bienvenido, {session.user.name}
+            </p>
+          </div>
+          <CreateClassButton
+            classTypes={classTypes}
+            instructors={instructors}
+          />
         </div>
 
-        {/* Stats */}
         <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
           <Card>
             <CardContent className="p-6">
@@ -128,7 +179,7 @@ export default async function AdminPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Membresías activas</p>
+                  <p className="text-sm text-gray-500">Membresias activas</p>
                   <p className="text-3xl font-bold text-purple-600">
                     {activeMemberships}
                   </p>
@@ -154,7 +205,6 @@ export default async function AdminPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {/* Clases de hoy */}
           <div>
             <h2 className="mb-4 text-xl font-bold text-gray-900">
               Clases de hoy
@@ -205,10 +255,9 @@ export default async function AdminPage() {
             )}
           </div>
 
-          {/* Últimas reservas */}
           <div>
             <h2 className="mb-4 text-xl font-bold text-gray-900">
-              Últimas reservas
+              Ultimas reservas
             </h2>
             <div className="space-y-3">
               {recentBookings.map((booking) => (
@@ -240,6 +289,21 @@ export default async function AdminPage() {
                 </Card>
               ))}
             </div>
+          </div>
+          {/* Gestión de clases */}
+          <div className="mt-8">
+            <h2 className="mb-4 text-xl font-bold text-gray-900">
+              Gestionar clases proximas
+            </h2>
+            <ClassManagerList
+              classes={upcomingClasses}
+              classTypes={classTypes}
+              instructors={instructors}
+            />
+          </div>
+          {/* Gestión de coaches */}
+          <div className="mt-8">
+            <CoachManager instructors={allInstructors} />
           </div>
         </div>
       </div>
