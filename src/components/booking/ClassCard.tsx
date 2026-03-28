@@ -1,8 +1,5 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Clock, Users, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -41,86 +38,150 @@ export default function ClassCard({
   const startTime = format(new Date(yogaClass.startTime), 'HH:mm', {
     locale: es,
   });
-  const endTime = format(new Date(yogaClass.endTime), 'HH:mm', {
-    locale: es,
-  });
+  const endTime = format(new Date(yogaClass.endTime), 'HH:mm', { locale: es });
   const duration =
     (new Date(yogaClass.endTime).getTime() -
       new Date(yogaClass.startTime).getTime()) /
     60000;
 
+  const getEmoji = (name: string) => {
+    if (name.includes('Hatha')) return '🧘';
+    if (name.includes('Vinyasa')) return '🌊';
+    if (name.includes('Yin')) return '🌙';
+    return '✨';
+  };
+
   return (
-    <Card className="transition-shadow hover:shadow-md">
-      <CardContent className="p-4">
-        <div className="mb-3 flex items-start justify-between">
-          <div>
-            <h3 className="font-semibold text-gray-900">{yogaClass.title}</h3>
-            <Badge
-              variant="secondary"
-              className="mt-1 text-xs"
-              style={{
-                backgroundColor: yogaClass.classType.color + '20',
-                color: yogaClass.classType.color,
-              }}
-            >
-              {yogaClass.classType.name}
-            </Badge>
-          </div>
-          {isBooked && (
-            <Badge className="border-green-200 bg-green-100 text-green-700">
-              ✓ Reservado
-            </Badge>
-          )}
-        </div>
-
-        <div className="mb-4 space-y-1">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Clock className="h-4 w-4" />
-            <span>
-              {startTime} - {endTime} ({duration} min)
-            </span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <User className="h-4 w-4" />
-            <span>{yogaClass.instructor.user.name}</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Users className="h-4 w-4" />
-            <span
-              className={
-                isFull
-                  ? 'text-red-500'
-                  : spotsLeft <= 3
-                    ? 'text-amber-500'
-                    : 'text-gray-500'
-              }
-            >
-              {isFull ? 'Clase llena' : `${spotsLeft} plazas disponibles`}
-            </span>
-          </div>
-        </div>
-
-        {isBooked ? (
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full border-red-200 text-red-500 hover:bg-red-50"
-            onClick={() => onCancel(userBooking.id)}
-            disabled={isLoading}
+    <div
+      style={{
+        backgroundColor: isBooked ? '#EDE9F8' : 'white',
+        borderRadius: '12px',
+        padding: '12px',
+        border: isBooked ? '1px solid #C4B8E8' : '1px solid #EDE8E0',
+        transition: 'all 0.15s',
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '8px',
+        }}
+      >
+        <span style={{ fontSize: '16px' }}>
+          {getEmoji(yogaClass.classType.name)}
+        </span>
+        {isBooked && (
+          <span
+            style={{
+              fontSize: '10px',
+              fontWeight: '600',
+              color: '#7C6BC4',
+              backgroundColor: 'white',
+              padding: '2px 8px',
+              borderRadius: '20px',
+            }}
           >
-            Cancelar reserva
-          </Button>
-        ) : (
-          <Button
-            size="sm"
-            className="w-full bg-purple-600 hover:bg-purple-700"
-            onClick={() => onBook(yogaClass.id)}
-            disabled={isFull || isLoading}
-          >
-            {isFull ? 'Lista de espera' : 'Reservar'}
-          </Button>
+            ✓ Reservado
+          </span>
         )}
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Título */}
+      <p
+        style={{
+          fontSize: '12px',
+          fontWeight: '600',
+          color: '#3D3530',
+          marginBottom: '6px',
+          lineHeight: '1.3',
+        }}
+      >
+        {yogaClass.title}
+      </p>
+
+      {/* Info */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '3px',
+          marginBottom: '10px',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <Clock size={10} color="#9E8E82" />
+          <span style={{ fontSize: '11px', color: '#9E8E82' }}>
+            {startTime} · {duration}min
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <User size={10} color="#9E8E82" />
+          <span style={{ fontSize: '11px', color: '#9E8E82' }}>
+            {yogaClass.instructor.user.name}
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <Users
+            size={10}
+            color={isFull ? '#DC2626' : spotsLeft <= 3 ? '#D97706' : '#8FAF8F'}
+          />
+          <span
+            style={{
+              fontSize: '11px',
+              color: isFull
+                ? '#DC2626'
+                : spotsLeft <= 3
+                  ? '#D97706'
+                  : '#8FAF8F',
+              fontWeight: '500',
+            }}
+          >
+            {isFull ? 'Llena' : `${spotsLeft} plazas`}
+          </span>
+        </div>
+      </div>
+
+      {/* Botón */}
+      {isBooked ? (
+        <button
+          onClick={() => onCancel(userBooking.id)}
+          disabled={isLoading}
+          style={{
+            width: '100%',
+            padding: '8px',
+            backgroundColor: 'transparent',
+            color: '#DC2626',
+            border: '1px solid #FECACA',
+            borderRadius: '8px',
+            fontSize: '11px',
+            fontWeight: '600',
+            cursor: isLoading ? 'not-allowed' : 'pointer',
+          }}
+        >
+          Cancelar
+        </button>
+      ) : (
+        <button
+          onClick={() => onBook(yogaClass.id)}
+          disabled={isFull || isLoading}
+          style={{
+            width: '100%',
+            padding: '8px',
+            backgroundColor: isFull ? '#F5F0E8' : '#7C6BC4',
+            color: isFull ? '#9E8E82' : 'white',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '11px',
+            fontWeight: '600',
+            cursor: isFull || isLoading ? 'not-allowed' : 'pointer',
+          }}
+        >
+          {isFull ? 'Llena' : 'Reservar'}
+        </button>
+      )}
+    </div>
   );
 }

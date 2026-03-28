@@ -3,9 +3,6 @@ import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, User } from 'lucide-react';
 import Link from 'next/link';
 import EditProfileForm from '@/components/profile/EditProfileForm';
 
@@ -33,18 +30,14 @@ export default async function PerfilPage() {
     where: {
       userId,
       status: 'CONFIRMED',
-      class: {
-        startTime: { lt: new Date() },
-      },
+      class: { startTime: { lt: new Date() } },
     },
     include: {
       class: {
         include: {
           classType: true,
           instructor: {
-            include: {
-              user: { select: { name: true } },
-            },
+            include: { user: { select: { name: true } } },
           },
         },
       },
@@ -54,70 +47,140 @@ export default async function PerfilPage() {
   });
 
   const totalClasses = await db.booking.count({
-    where: {
-      userId,
-      status: 'CONFIRMED',
-    },
+    where: { userId, status: 'CONFIRMED' },
   });
 
   const activeMembership = user?.memberships.find(
     (m) => m.isActive && m.endDate >= new Date()
   );
 
+  const role = (session.user as { role?: string }).role;
+
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Mi Perfil</h1>
-          <p className="mt-1 text-gray-500">Tu informacion y historial</p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          <div className="space-y-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="mb-4 flex flex-col items-center text-center">
-                  {user?.image ? (
-                    <img
-                      src={user.image}
-                      alt={user.name || 'Foto de perfil'}
-                      className="mb-3 h-20 w-20 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-purple-100 text-3xl font-bold text-purple-600">
-                      {session.user.name?.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <h2 className="text-xl font-bold text-gray-900">
-                    {user?.name}
-                  </h2>
-                  <p className="text-sm text-gray-500">{user?.email}</p>
-                  <Badge className="mt-2" variant="secondary">
-                    {(session.user as { role?: string }).role === 'ADMIN'
-                      ? 'Administrador'
-                      : (session.user as { role?: string }).role ===
-                          'INSTRUCTOR'
-                        ? 'Instructor'
-                        : 'Alumno'}
-                  </Badge>
-                  {user?.bio && (
-                    <p className="mt-3 text-center text-sm text-gray-600">
-                      {user.bio}
-                    </p>
-                  )}
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#FDFAF5',
+        padding: '40px 24px',
+      }}
+    >
+      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '320px 1fr',
+            gap: '24px',
+          }}
+        >
+          {/* Columna izquierda */}
+          <div
+            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+          >
+            {/* Card perfil */}
+            <div
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '20px',
+                padding: '28px',
+                border: '1px solid #EDE8E0',
+                textAlign: 'center',
+              }}
+            >
+              {user?.image ? (
+                <img
+                  src={user.image}
+                  alt={user.name || ''}
+                  style={{
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    margin: '0 auto 16px',
+                    display: 'block',
+                    border: '3px solid #EDE9F8',
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: '80px',
+                    height: '80px',
+                    backgroundColor: '#EDE9F8',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '32px',
+                    fontWeight: '700',
+                    color: '#7C6BC4',
+                    margin: '0 auto 16px',
+                  }}
+                >
+                  {user?.name?.charAt(0).toUpperCase()}
                 </div>
-                <div className="border-t pt-4">
-                  <p className="text-center text-xs text-gray-400">
-                    Miembro desde{' '}
-                    {user?.createdAt
-                      ? format(user.createdAt, "MMMM 'de' yyyy", { locale: es })
-                      : ''}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+              )}
 
-            {/* Formulario de edicion */}
+              <h2
+                style={{
+                  fontSize: '20px',
+                  fontWeight: '700',
+                  color: '#3D3530',
+                  marginBottom: '4px',
+                }}
+              >
+                {user?.name}
+              </h2>
+              <p
+                style={{
+                  fontSize: '13px',
+                  color: '#9E8E82',
+                  marginBottom: '12px',
+                }}
+              >
+                {user?.email}
+              </p>
+
+              <span
+                style={{
+                  display: 'inline-block',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  color: '#7C6BC4',
+                  backgroundColor: '#EDE9F8',
+                  padding: '4px 12px',
+                  borderRadius: '20px',
+                  marginBottom: '16px',
+                }}
+              >
+                {role === 'ADMIN'
+                  ? '⚙️ Administrador'
+                  : role === 'INSTRUCTOR'
+                    ? '🧘 Instructor'
+                    : '👤 Alumno'}
+              </span>
+
+              {user?.bio && (
+                <p
+                  style={{
+                    fontSize: '13px',
+                    color: '#6B5B4E',
+                    lineHeight: '1.6',
+                    marginBottom: '16px',
+                  }}
+                >
+                  {user.bio}
+                </p>
+              )}
+
+              <p style={{ fontSize: '12px', color: '#C4B8B0' }}>
+                Miembro desde{' '}
+                {user?.createdAt
+                  ? format(user.createdAt, "MMMM 'de' yyyy", { locale: es })
+                  : ''}
+              </p>
+            </div>
+
+            {/* Editar perfil */}
             <EditProfileForm
               user={{
                 name: user?.name || null,
@@ -127,134 +190,343 @@ export default async function PerfilPage() {
               }}
             />
 
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="mb-4 font-semibold text-gray-900">
-                  Mis estadisticas
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">Total clases</span>
-                    <span className="font-bold text-purple-600">
-                      {totalClasses}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">
-                      Clases asistidas
-                    </span>
-                    <span className="font-bold text-purple-600">
-                      {pastBookings.length}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="mb-4 font-semibold text-gray-900">
-                  Membresia actual
-                </h3>
-                {activeMembership ? (
-                  <div>
-                    <p className="text-lg font-bold text-purple-600">
-                      {activeMembership.membership.name}
-                    </p>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Expira:{' '}
-                      {format(activeMembership.endDate, "d 'de' MMMM yyyy", {
-                        locale: es,
-                      })}
-                    </p>
-                    {activeMembership.membership.classLimit && (
-                      <p className="mt-1 text-sm text-gray-500">
-                        Clases usadas: {activeMembership.classesUsed}/
-                        {activeMembership.membership.classLimit}
+            {/* Membresía */}
+            <div
+              style={{
+                backgroundColor: activeMembership ? '#7C6BC4' : 'white',
+                borderRadius: '20px',
+                padding: '24px',
+                border: activeMembership ? 'none' : '1px solid #EDE8E0',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {activeMembership && (
+                <>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '-20px',
+                      right: '-20px',
+                      width: '80px',
+                      height: '80px',
+                      backgroundColor: 'white',
+                      borderRadius: '50%',
+                      opacity: '0.08',
+                    }}
+                  ></div>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: '-20px',
+                      left: '-10px',
+                      width: '60px',
+                      height: '60px',
+                      backgroundColor: 'white',
+                      borderRadius: '50%',
+                      opacity: '0.06',
+                    }}
+                  ></div>
+                </>
+              )}
+              <p
+                style={{
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  color: activeMembership ? 'rgba(255,255,255,0.7)' : '#9E8E82',
+                  letterSpacing: '0.5px',
+                  marginBottom: '8px',
+                }}
+              >
+                MEMBRESÍA
+              </p>
+              {activeMembership ? (
+                <>
+                  <p
+                    style={{
+                      fontSize: '18px',
+                      fontWeight: '700',
+                      color: 'white',
+                      marginBottom: '4px',
+                    }}
+                  >
+                    {activeMembership.membership.name}
+                  </p>
+                  <p
+                    style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}
+                  >
+                    Expira{' '}
+                    {format(activeMembership.endDate, "d 'de' MMMM yyyy", {
+                      locale: es,
+                    })}
+                  </p>
+                  {activeMembership.membership.classLimit && (
+                    <>
+                      <div
+                        style={{
+                          height: '4px',
+                          backgroundColor: 'rgba(255,255,255,0.2)',
+                          borderRadius: '2px',
+                          margin: '12px 0 4px',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        <div
+                          style={{
+                            height: '100%',
+                            width: `${(activeMembership.classesUsed / activeMembership.membership.classLimit) * 100}%`,
+                            backgroundColor: 'white',
+                            borderRadius: '2px',
+                          }}
+                        ></div>
+                      </div>
+                      <p
+                        style={{
+                          fontSize: '11px',
+                          color: 'rgba(255,255,255,0.6)',
+                        }}
+                      >
+                        {activeMembership.classesUsed}/
+                        {activeMembership.membership.classLimit} clases usadas
                       </p>
-                    )}
-                  </div>
-                ) : (
-                  <div>
-                    <p className="text-sm text-gray-400">
-                      Sin membresia activa
-                    </p>
-                    <Link
-                      href="/precios"
-                      className="mt-2 inline-block text-sm font-medium text-purple-600 hover:underline"
-                    >
-                      Ver planes
-                    </Link>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="lg:col-span-2">
-            <h2 className="mb-4 text-xl font-bold text-gray-900">
-              Historial de clases
-            </h2>
-            {pastBookings.length === 0 ? (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <p className="text-gray-400">
-                    Todavia no has asistido a ninguna clase
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p
+                    style={{
+                      fontSize: '15px',
+                      fontWeight: '600',
+                      color: '#3D3530',
+                      marginBottom: '4px',
+                    }}
+                  >
+                    Sin membresía activa
                   </p>
                   <Link
-                    href="/clases"
-                    className="mt-3 inline-block rounded-lg bg-purple-600 px-6 py-2 text-white hover:bg-purple-700"
+                    href="/precios"
+                    style={{
+                      display: 'inline-block',
+                      marginTop: '8px',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      color: '#7C6BC4',
+                      textDecoration: 'none',
+                    }}
                   >
-                    Reservar una clase
+                    Ver planes →
                   </Link>
-                </CardContent>
-              </Card>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Historial */}
+          <div>
+            {pastBookings.length === 0 ? (
+              <div
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: '20px',
+                  padding: '64px',
+                  textAlign: 'center',
+                  border: '1px solid #EDE8E0',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '40px',
+                    display: 'block',
+                    marginBottom: '16px',
+                  }}
+                >
+                  🧘
+                </span>
+                <p
+                  style={{
+                    fontSize: '15px',
+                    fontWeight: '500',
+                    color: '#3D3530',
+                    marginBottom: '8px',
+                  }}
+                >
+                  Aún no has asistido a ninguna clase
+                </p>
+                <p
+                  style={{
+                    fontSize: '13px',
+                    color: '#9E8E82',
+                    marginBottom: '24px',
+                  }}
+                >
+                  Reserva tu primera clase y comienza tu práctica
+                </p>
+                <Link
+                  href="/clases"
+                  style={{
+                    display: 'inline-block',
+                    backgroundColor: '#7C6BC4',
+                    color: 'white',
+                    borderRadius: '10px',
+                    padding: '12px 24px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    textDecoration: 'none',
+                  }}
+                >
+                  Ver clases
+                </Link>
+              </div>
             ) : (
-              <div className="space-y-3">
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
                 {pastBookings.map((booking) => (
-                  <Card key={booking.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="rounded-lg bg-gray-100 p-3">
-                            <Calendar className="h-5 w-5 text-gray-400" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-gray-900">
-                              {booking.class.title}
-                            </h3>
-                            <div className="mt-1 flex items-center gap-3">
-                              <span className="flex items-center gap-1 text-sm text-gray-500">
-                                <Clock className="h-3 w-3" />
-                                {format(
-                                  new Date(booking.class.startTime),
-                                  'EEEE d MMM yyyy HH:mm',
-                                  { locale: es }
-                                )}
-                              </span>
-                              <span className="flex items-center gap-1 text-sm text-gray-500">
-                                <User className="h-3 w-3" />
-                                {booking.class.instructor.user.name}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <Badge
-                          variant="secondary"
+                  <div
+                    key={booking.id}
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius: '16px',
+                      padding: '20px',
+                      border: '1px solid #EDE8E0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '16px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '44px',
+                          height: '44px',
+                          backgroundColor: booking.class.classType.color + '20',
+                          borderRadius: '12px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '20px',
+                        }}
+                      >
+                        {booking.class.classType.name.includes('Hatha')
+                          ? '🧘'
+                          : booking.class.classType.name.includes('Vinyasa')
+                            ? '🌊'
+                            : '🌙'}
+                      </div>
+                      <div>
+                        <p
                           style={{
-                            backgroundColor:
-                              booking.class.classType.color + '20',
-                            color: booking.class.classType.color,
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#3D3530',
+                            marginBottom: '2px',
                           }}
                         >
-                          {booking.class.classType.name}
-                        </Badge>
+                          {booking.class.title}
+                        </p>
+                        <p style={{ fontSize: '12px', color: '#9E8E82' }}>
+                          {format(
+                            new Date(booking.class.startTime),
+                            'EEEE d MMM yyyy · HH:mm',
+                            { locale: es }
+                          )}
+                          {' · '}
+                          {booking.class.instructor.user.name}
+                        </p>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: '500',
+                        color: booking.class.classType.color,
+                        backgroundColor: booking.class.classType.color + '20',
+                        padding: '4px 10px',
+                        borderRadius: '20px',
+                      }}
+                    >
+                      {booking.class.classType.name}
+                    </span>
+                  </div>
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Stats */}
+          <div
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid #EDE8E0',
+            }}
+          >
+            <p
+              style={{
+                fontSize: '13px',
+                fontWeight: '600',
+                color: '#3D3530',
+                marginBottom: '16px',
+              }}
+            >
+              Mis estadísticas
+            </p>
+            <div
+              style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <span style={{ fontSize: '13px', color: '#9E8E82' }}>
+                  Total clases
+                </span>
+                <span
+                  style={{
+                    fontSize: '20px',
+                    fontWeight: '700',
+                    color: '#7C6BC4',
+                  }}
+                >
+                  {totalClasses}
+                </span>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <span style={{ fontSize: '13px', color: '#9E8E82' }}>
+                  Clases asistidas
+                </span>
+                <span
+                  style={{
+                    fontSize: '20px',
+                    fontWeight: '700',
+                    color: '#8FAF8F',
+                  }}
+                >
+                  {pastBookings.length}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

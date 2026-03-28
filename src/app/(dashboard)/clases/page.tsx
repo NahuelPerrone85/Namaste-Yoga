@@ -10,13 +10,29 @@ export default async function ClasesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            📅 Clases de Yoga
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#FDFAF5',
+        padding: '40px 24px',
+      }}
+    >
+      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+        <div style={{ marginBottom: '32px' }}>
+          <h1
+            style={{
+              fontSize: '32px',
+              fontWeight: '700',
+              color: '#3D3530',
+              letterSpacing: '-0.5px',
+              marginBottom: '8px',
+            }}
+          >
+            Calendario de clases 📅
           </h1>
-          <p className="mt-1 text-gray-500">Reserva tu clase favorita</p>
+          <p style={{ fontSize: '15px', color: '#9E8E82' }}>
+            Reserva tu próxima práctica
+          </p>
         </div>
         <ClassCalendar />
       </div>

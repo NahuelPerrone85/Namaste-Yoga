@@ -40,50 +40,117 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="rounded-2xl bg-white p-8 shadow-xl">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-900">🧘 Namaste Yoga</h1>
-        <p className="mt-2 text-gray-500">Crea tu cuenta</p>
+    <div>
+      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <span style={{ fontSize: '32px' }}>🪷</span>
+        <h1
+          style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#3D3530',
+            marginTop: '8px',
+            letterSpacing: '-0.5px',
+          }}
+        >
+          Crear cuenta
+        </h1>
+        <p style={{ fontSize: '14px', color: '#9E8E82', marginTop: '6px' }}>
+          Únete a Shanti y empieza tu práctica hoy
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: '16px' }}>
+          <label
+            style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: '500',
+              color: '#6B5B4E',
+              marginBottom: '6px',
+            }}
+          >
             Nombre completo
           </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              borderRadius: '10px',
+              border: '1px solid #EDE8E0',
+              backgroundColor: 'white',
+              fontSize: '14px',
+              color: '#3D3530',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
             placeholder="Tu nombre"
             required
           />
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
+        <div style={{ marginBottom: '16px' }}>
+          <label
+            style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: '500',
+              color: '#6B5B4E',
+              marginBottom: '6px',
+            }}
+          >
             Email
           </label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              borderRadius: '10px',
+              border: '1px solid #EDE8E0',
+              backgroundColor: 'white',
+              fontSize: '14px',
+              color: '#3D3530',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
             placeholder="tu@email.com"
             required
           />
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
+        <div style={{ marginBottom: '24px' }}>
+          <label
+            style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: '500',
+              color: '#6B5B4E',
+              marginBottom: '6px',
+            }}
+          >
             Contraseña
           </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              borderRadius: '10px',
+              border: '1px solid #EDE8E0',
+              backgroundColor: 'white',
+              fontSize: '14px',
+              color: '#3D3530',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
             placeholder="Mínimo 6 caracteres"
             required
             minLength={6}
@@ -91,27 +158,71 @@ export default function RegisterPage() {
         </div>
 
         {error && (
-          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500">
-            {error}
+          <div
+            style={{
+              backgroundColor: '#FEF2F2',
+              border: '1px solid #FECACA',
+              borderRadius: '10px',
+              padding: '12px 16px',
+              marginBottom: '16px',
+            }}
+          >
+            <p style={{ fontSize: '13px', color: '#DC2626' }}>{error}</p>
           </div>
         )}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-purple-600 py-3 font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+          style={{
+            width: '100%',
+            padding: '13px',
+            backgroundColor: loading ? '#A598D4' : '#7C6BC4',
+            color: 'white',
+            borderRadius: '10px',
+            border: 'none',
+            fontSize: '15px',
+            fontWeight: '600',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            boxShadow: '0 4px 16px rgba(124,107,196,0.35)',
+            transition: 'opacity 0.2s',
+          }}
         >
-          {loading ? 'Creando cuenta...' : 'Crear cuenta'}
+          {loading ? 'Creando cuenta...' : 'Crear cuenta gratis'}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
+      <div
+        style={{
+          backgroundColor: '#F5F0E8',
+          borderRadius: '10px',
+          padding: '12px 16px',
+          marginTop: '16px',
+        }}
+      >
+        <p style={{ fontSize: '12px', color: '#9E8E82', textAlign: 'center' }}>
+          ✓ Sin tarjeta de crédito · ✓ Cancela cuando quieras
+        </p>
+      </div>
+
+      <p
+        style={{
+          textAlign: 'center',
+          fontSize: '13px',
+          color: '#9E8E82',
+          marginTop: '20px',
+        }}
+      >
         ¿Ya tienes cuenta?{' '}
         <Link
           href="/login"
-          className="font-medium text-purple-600 hover:underline"
+          style={{
+            color: '#7C6BC4',
+            fontWeight: '600',
+            textDecoration: 'none',
+          }}
         >
-          Inicia sesión
+          Iniciar sesión
         </Link>
       </p>
     </div>

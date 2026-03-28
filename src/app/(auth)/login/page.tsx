@@ -34,63 +34,144 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="rounded-2xl bg-white p-8 shadow-xl">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-900">🧘 Namaste Yoga</h1>
-        <p className="mt-2 text-gray-500">Inicia sesión en tu cuenta</p>
+    <div>
+      {/* Logo mobile */}
+      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <span style={{ fontSize: '32px' }}>🪷</span>
+        <h1
+          style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#3D3530',
+            marginTop: '8px',
+            letterSpacing: '-0.5px',
+          }}
+        >
+          Iniciar sesión
+        </h1>
+        <p style={{ fontSize: '14px', color: '#9E8E82', marginTop: '6px' }}>
+          Bienvenido de nuevo a Shanti
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: '16px' }}>
+          <label
+            style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: '500',
+              color: '#6B5B4E',
+              marginBottom: '6px',
+            }}
+          >
             Email
           </label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              borderRadius: '10px',
+              border: '1px solid #EDE8E0',
+              backgroundColor: 'white',
+              fontSize: '14px',
+              color: '#3D3530',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
             placeholder="tu@email.com"
             required
           />
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
+        <div style={{ marginBottom: '24px' }}>
+          <label
+            style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: '500',
+              color: '#6B5B4E',
+              marginBottom: '6px',
+            }}
+          >
             Contraseña
           </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              borderRadius: '10px',
+              border: '1px solid #EDE8E0',
+              backgroundColor: 'white',
+              fontSize: '14px',
+              color: '#3D3530',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
             placeholder="••••••••"
             required
           />
         </div>
 
         {error && (
-          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500">
-            {error}
+          <div
+            style={{
+              backgroundColor: '#FEF2F2',
+              border: '1px solid #FECACA',
+              borderRadius: '10px',
+              padding: '12px 16px',
+              marginBottom: '16px',
+            }}
+          >
+            <p style={{ fontSize: '13px', color: '#DC2626' }}>{error}</p>
           </div>
         )}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-purple-600 py-3 font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+          style={{
+            width: '100%',
+            padding: '13px',
+            backgroundColor: loading ? '#A598D4' : '#7C6BC4',
+            color: 'white',
+            borderRadius: '10px',
+            border: 'none',
+            fontSize: '15px',
+            fontWeight: '600',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            boxShadow: '0 4px 16px rgba(124,107,196,0.35)',
+            transition: 'opacity 0.2s',
+          }}
         >
           {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
+      <p
+        style={{
+          textAlign: 'center',
+          fontSize: '13px',
+          color: '#9E8E82',
+          marginTop: '24px',
+        }}
+      >
         ¿No tienes cuenta?{' '}
         <Link
           href="/register"
-          className="font-medium text-purple-600 hover:underline"
+          style={{
+            color: '#7C6BC4',
+            fontWeight: '600',
+            textDecoration: 'none',
+          }}
         >
-          Regístrate aquí
+          Regístrate gratis
         </Link>
       </p>
     </div>

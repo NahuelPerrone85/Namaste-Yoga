@@ -2,9 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Plus, Pencil, Trash2, X, Check } from 'lucide-react';
 
 interface Instructor {
@@ -24,13 +21,32 @@ interface CoachManagerProps {
   instructors: Instructor[];
 }
 
+const inputStyle = {
+  width: '100%',
+  padding: '10px 14px',
+  borderRadius: '10px',
+  border: '1px solid #EDE8E0',
+  fontSize: '13px',
+  color: '#3D3530',
+  outline: 'none',
+  boxSizing: 'border-box' as const,
+  backgroundColor: 'white',
+};
+
+const labelStyle = {
+  display: 'block',
+  fontSize: '12px',
+  fontWeight: '500' as const,
+  color: '#6B5B4E',
+  marginBottom: '6px',
+};
+
 export default function CoachManager({ instructors }: CoachManagerProps) {
   const router = useRouter();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState<string | null>(null);
 
-  // Create form state
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -38,7 +54,6 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
   const [newSpecialty, setNewSpecialty] = useState('');
   const [createError, setCreateError] = useState('');
 
-  // Edit form state
   const [editName, setEditName] = useState('');
   const [editBio, setEditBio] = useState('');
   const [editSpecialty, setEditSpecialty] = useState('');
@@ -49,7 +64,6 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
     e.preventDefault();
     setLoading('create');
     setCreateError('');
-
     try {
       const res = await fetch('/api/instructors', {
         method: 'POST',
@@ -65,14 +79,11 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
             .filter(Boolean),
         }),
       });
-
       const data = await res.json();
-
       if (!res.ok) {
         setCreateError(data.error);
         return;
       }
-
       setShowCreateForm(false);
       setNewName('');
       setNewEmail('');
@@ -90,7 +101,6 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
   const handleEdit = async (instructorId: string) => {
     setLoading('edit');
     setEditError('');
-
     try {
       const res = await fetch(`/api/instructors/${instructorId}`, {
         method: 'PATCH',
@@ -105,14 +115,11 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
           image: editImage,
         }),
       });
-
       const data = await res.json();
-
       if (!res.ok) {
         setEditError(data.error);
         return;
       }
-
       setEditingId(null);
       router.refresh();
     } catch {
@@ -123,27 +130,17 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
   };
 
   const handleDelete = async (instructorId: string) => {
-    if (
-      !confirm(
-        'Seguro que quieres eliminar este coach? Esta accion no se puede deshacer.'
-      )
-    )
-      return;
-
+    if (!confirm('¿Seguro que quieres eliminar este coach?')) return;
     setLoading(instructorId);
-
     try {
       const res = await fetch(`/api/instructors/${instructorId}`, {
         method: 'DELETE',
       });
-
       const data = await res.json();
-
       if (!res.ok) {
         alert(data.error);
         return;
       }
-
       router.refresh();
     } catch {
       alert('Error al eliminar el coach');
@@ -163,268 +160,453 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900">Gestionar Coaches</h2>
-        <Button
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '16px',
+        }}
+      >
+        <h2 style={{ fontSize: '18px', fontWeight: '700', color: '#3D3530' }}>
+          Gestionar Coaches
+        </h2>
+        <button
           onClick={() => setShowCreateForm(!showCreateForm)}
-          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '10px 18px',
+            backgroundColor: '#7C6BC4',
+            color: 'white',
+            border: 'none',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: '600',
+            cursor: 'pointer',
+          }}
         >
-          <Plus className="h-4 w-4" />
+          <Plus size={14} />
           Nuevo coach
-        </Button>
+        </button>
       </div>
 
-      {/* Formulario crear coach */}
+      {/* Formulario crear */}
       {showCreateForm && (
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="font-semibold text-gray-900">Nuevo coach</h3>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowCreateForm(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
+        <div
+          style={{
+            backgroundColor: 'white',
+            borderRadius: '20px',
+            padding: '28px',
+            border: '1px solid #EDE8E0',
+            marginBottom: '16px',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '20px',
+            }}
+          >
+            <h3
+              style={{ fontSize: '15px', fontWeight: '700', color: '#3D3530' }}
+            >
+              Nuevo coach
+            </h3>
+            <button
+              onClick={() => setShowCreateForm(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#9E8E82',
+              }}
+            >
+              <X size={16} />
+            </button>
+          </div>
+          <form onSubmit={handleCreate}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '14px',
+                marginBottom: '14px',
+              }}
+            >
+              <div>
+                <label style={labelStyle}>Nombre completo</label>
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  style={inputStyle}
+                  required
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Email</label>
+                <input
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  style={inputStyle}
+                  required
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Contraseña temporal</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  style={inputStyle}
+                  required
+                  minLength={6}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>
+                  Especialidades (separadas por coma)
+                </label>
+                <input
+                  type="text"
+                  value={newSpecialty}
+                  onChange={(e) => setNewSpecialty(e.target.value)}
+                  style={inputStyle}
+                  placeholder="Hatha Yoga, Meditación"
+                />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={labelStyle}>Bio</label>
+                <textarea
+                  value={newBio}
+                  onChange={(e) => setNewBio(e.target.value)}
+                  rows={2}
+                  style={{ ...inputStyle, resize: 'none' }}
+                  placeholder="Descripción del coach..."
+                />
+              </div>
             </div>
-            <form onSubmit={handleCreate} className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Nombre completo
-                  </label>
-                  <input
-                    type="text"
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Contrasena temporal
-                  </label>
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    required
-                    minLength={6}
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Especialidades (separadas por coma)
-                  </label>
-                  <input
-                    type="text"
-                    value={newSpecialty}
-                    onChange={(e) => setNewSpecialty(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="Hatha Yoga, Meditacion, Vinyasa"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Bio
-                  </label>
-                  <textarea
-                    value={newBio}
-                    onChange={(e) => setNewBio(e.target.value)}
-                    rows={3}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="Descripcion del coach..."
-                  />
-                </div>
-              </div>
-              {createError && (
-                <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500">
+            {createError && (
+              <div
+                style={{
+                  backgroundColor: '#FEF2F2',
+                  borderRadius: '10px',
+                  padding: '10px 14px',
+                  marginBottom: '14px',
+                }}
+              >
+                <p style={{ fontSize: '12px', color: '#DC2626' }}>
                   {createError}
-                </div>
-              )}
-              <div className="flex gap-3">
-                <Button
-                  type="submit"
-                  disabled={loading === 'create'}
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
-                  {loading === 'create' ? 'Creando...' : 'Crear coach'}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowCreateForm(false)}
-                >
-                  Cancelar
-                </Button>
+                </p>
               </div>
-            </form>
-          </CardContent>
-        </Card>
+            )}
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                type="submit"
+                disabled={loading === 'create'}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#7C6BC4',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                }}
+              >
+                {loading === 'create' ? 'Creando...' : 'Crear coach'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowCreateForm(false)}
+                style={{
+                  padding: '10px 16px',
+                  backgroundColor: '#F5F0E8',
+                  color: '#6B5B4E',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
       )}
 
-      {/* Lista de coaches */}
-      <div className="space-y-3">
+      {/* Lista coaches */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {instructors.length === 0 ? (
-          <Card>
-            <CardContent className="p-6 text-center text-gray-400">
+          <div
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '14px',
+              padding: '32px',
+              textAlign: 'center',
+              border: '1px solid #EDE8E0',
+            }}
+          >
+            <p style={{ fontSize: '13px', color: '#9E8E82' }}>
               No hay coaches registrados
-            </CardContent>
-          </Card>
+            </p>
+          </div>
         ) : (
           instructors.map((instructor) => (
-            <Card key={instructor.id}>
-              <CardContent className="p-4">
-                {editingId === instructor.id ? (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">
-                          Nombre
-                        </label>
-                        <input
-                          type="text"
-                          value={editName}
-                          onChange={(e) => setEditName(e.target.value)}
-                          className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">
-                          Especialidades (separadas por coma)
-                        </label>
-                        <input
-                          type="text"
-                          value={editSpecialty}
-                          onChange={(e) => setEditSpecialty(e.target.value)}
-                          className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">
-                          URL foto
-                        </label>
-                        <input
-                          type="url"
-                          value={editImage}
-                          onChange={(e) => setEditImage(e.target.value)}
-                          className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">
-                          Bio
-                        </label>
-                        <textarea
-                          value={editBio}
-                          onChange={(e) => setEditBio(e.target.value)}
-                          rows={2}
-                          className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                        />
-                      </div>
+            <div
+              key={instructor.id}
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '14px',
+                padding: '16px 20px',
+                border: '1px solid #EDE8E0',
+              }}
+            >
+              {editingId === instructor.id ? (
+                <div>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      gap: '12px',
+                      marginBottom: '12px',
+                    }}
+                  >
+                    <div>
+                      <label style={labelStyle}>Nombre</label>
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        style={inputStyle}
+                      />
                     </div>
-                    {editError && (
-                      <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500">
-                        {editError}
+                    <div>
+                      <label style={labelStyle}>Especialidades (coma)</label>
+                      <input
+                        type="text"
+                        value={editSpecialty}
+                        onChange={(e) => setEditSpecialty(e.target.value)}
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>URL foto</label>
+                      <input
+                        type="url"
+                        value={editImage}
+                        onChange={(e) => setEditImage(e.target.value)}
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Bio</label>
+                      <input
+                        type="text"
+                        value={editBio}
+                        onChange={(e) => setEditBio(e.target.value)}
+                        style={inputStyle}
+                      />
+                    </div>
+                  </div>
+                  {editError && (
+                    <p
+                      style={{
+                        fontSize: '12px',
+                        color: '#DC2626',
+                        marginBottom: '10px',
+                      }}
+                    >
+                      {editError}
+                    </p>
+                  )}
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => handleEdit(instructor.id)}
+                      disabled={loading === 'edit'}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: '8px 16px',
+                        backgroundColor: '#7C6BC4',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Check size={12} />{' '}
+                      {loading === 'edit' ? 'Guardando...' : 'Guardar'}
+                    </button>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: '8px 14px',
+                        backgroundColor: '#F5F0E8',
+                        color: '#6B5B4E',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <X size={12} /> Cancelar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                    }}
+                  >
+                    {instructor.user.image ? (
+                      <img
+                        src={instructor.user.image}
+                        alt={instructor.user.name || ''}
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          backgroundColor: '#EDE9F8',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '16px',
+                          fontWeight: '700',
+                          color: '#7C6BC4',
+                        }}
+                      >
+                        {instructor.user.name?.charAt(0).toUpperCase()}
                       </div>
                     )}
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => handleEdit(instructor.id)}
-                        disabled={loading === 'edit'}
-                        className="bg-purple-600 hover:bg-purple-700"
+                    <div>
+                      <p
+                        style={{
+                          fontSize: '14px',
+                          fontWeight: '600',
+                          color: '#3D3530',
+                          marginBottom: '2px',
+                        }}
                       >
-                        <Check className="mr-1 h-3 w-3" />
-                        {loading === 'edit' ? 'Guardando...' : 'Guardar'}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setEditingId(null)}
+                        {instructor.user.name}
+                      </p>
+                      <p
+                        style={{
+                          fontSize: '12px',
+                          color: '#9E8E82',
+                          marginBottom: '4px',
+                        }}
                       >
-                        <X className="mr-1 h-3 w-3" />
-                        Cancelar
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      {instructor.user.image ? (
-                        <img
-                          src={instructor.user.image}
-                          alt={instructor.user.name || ''}
-                          className="h-12 w-12 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 text-lg font-bold text-purple-600">
-                          {instructor.user.name?.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                      <div>
-                        <p className="font-semibold text-gray-900">
-                          {instructor.user.name}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {instructor.user.email}
-                        </p>
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          {instructor.specialty.map((spec) => (
-                            <Badge
-                              key={spec}
-                              variant="secondary"
-                              className="bg-purple-100 text-xs text-purple-700"
-                            >
-                              {spec}
-                            </Badge>
-                          ))}
-                        </div>
+                        {instructor.user.email}
+                      </p>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: '4px',
+                        }}
+                      >
+                        {instructor.specialty.map((spec) => (
+                          <span
+                            key={spec}
+                            style={{
+                              fontSize: '10px',
+                              fontWeight: '500',
+                              color: '#7C6BC4',
+                              backgroundColor: '#EDE9F8',
+                              padding: '2px 8px',
+                              borderRadius: '20px',
+                            }}
+                          >
+                            {spec}
+                          </span>
+                        ))}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-400">
-                        {instructor.classes.length} clases
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => startEdit(instructor)}
-                        className="flex items-center gap-1"
-                      >
-                        <Pencil className="h-3 w-3" />
-                        Editar
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(instructor.id)}
-                        disabled={loading === instructor.id}
-                        className="flex items-center gap-1 border-red-200 text-red-500 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                        Eliminar
-                      </Button>
-                    </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    <span style={{ fontSize: '12px', color: '#9E8E82' }}>
+                      {instructor.classes.length} clases
+                    </span>
+                    <button
+                      onClick={() => startEdit(instructor)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: '7px 12px',
+                        backgroundColor: '#F5F0E8',
+                        color: '#6B5B4E',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Pencil size={11} /> Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(instructor.id)}
+                      disabled={loading === instructor.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: '7px 12px',
+                        backgroundColor: '#FEF2F2',
+                        color: '#DC2626',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Trash2 size={11} /> Eliminar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           ))
         )}
       </div>

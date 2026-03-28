@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Pencil, X, Check } from 'lucide-react';
 
 interface EditProfileFormProps {
@@ -62,110 +60,244 @@ export default function EditProfileForm({ user }: EditProfileFormProps) {
 
   if (!isEditing) {
     return (
-      <Button
-        variant="outline"
-        size="sm"
+      <button
         onClick={() => setIsEditing(true)}
-        className="flex items-center gap-2"
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          padding: '12px',
+          backgroundColor: 'white',
+          border: '1px solid #EDE8E0',
+          borderRadius: '14px',
+          fontSize: '13px',
+          fontWeight: '500',
+          color: '#6B5B4E',
+          cursor: 'pointer',
+        }}
       >
-        <Pencil className="h-4 w-4" />
+        <Pencil size={14} />
         Editar perfil
-      </Button>
+      </button>
     );
   }
 
   return (
-    <Card className="mt-4">
-      <CardContent className="p-6">
-        <h3 className="mb-4 font-semibold text-gray-900">Editar perfil</h3>
+    <div
+      style={{
+        backgroundColor: 'white',
+        borderRadius: '20px',
+        padding: '24px',
+        border: '1px solid #EDE8E0',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '20px',
+        }}
+      >
+        <p style={{ fontSize: '14px', fontWeight: '600', color: '#3D3530' }}>
+          Editar perfil
+        </p>
+        <button
+          onClick={handleCancel}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: '#9E8E82',
+          }}
+        >
+          <X size={16} />
+        </button>
+      </div>
 
-        <div className="space-y-4">
-          {/* Nombre */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Nombre completo
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-              placeholder="Tu nombre"
-            />
-          </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div>
+          <label
+            style={{
+              display: 'block',
+              fontSize: '12px',
+              fontWeight: '500',
+              color: '#6B5B4E',
+              marginBottom: '6px',
+            }}
+          >
+            Nombre
+          </label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '10px 14px',
+              borderRadius: '10px',
+              border: '1px solid #EDE8E0',
+              fontSize: '13px',
+              color: '#3D3530',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+        </div>
 
-          {/* Bio */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Descripcion personal
-            </label>
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              rows={3}
-              maxLength={500}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-              placeholder="Cuentanos algo sobre ti... (opcional)"
-            />
-            <p className="mt-1 text-xs text-gray-400">
-              {bio.length}/500 caracteres
-            </p>
-          </div>
+        <div>
+          <label
+            style={{
+              display: 'block',
+              fontSize: '12px',
+              fontWeight: '500',
+              color: '#6B5B4E',
+              marginBottom: '6px',
+            }}
+          >
+            Descripción
+          </label>
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            rows={3}
+            maxLength={500}
+            style={{
+              width: '100%',
+              padding: '10px 14px',
+              borderRadius: '10px',
+              border: '1px solid #EDE8E0',
+              fontSize: '13px',
+              color: '#3D3530',
+              outline: 'none',
+              resize: 'none',
+              boxSizing: 'border-box',
+            }}
+            placeholder="Cuéntanos algo sobre ti..."
+          />
+          <p
+            style={{
+              fontSize: '11px',
+              color: '#C4B8B0',
+              marginTop: '4px',
+              textAlign: 'right',
+            }}
+          >
+            {bio.length}/500
+          </p>
+        </div>
 
-          {/* Foto de perfil */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              URL de foto de perfil
-            </label>
-            <input
-              type="url"
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-              placeholder="https://ejemplo.com/tu-foto.jpg"
-            />
-            {image && (
-              <div className="mt-2 flex items-center gap-3">
-                <img
-                  src={image}
-                  alt="Preview"
-                  className="h-12 w-12 rounded-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-                <p className="text-xs text-gray-400">Preview de tu foto</p>
-              </div>
-            )}
-          </div>
-
-          {error && (
-            <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500">
-              {error}
+        <div>
+          <label
+            style={{
+              display: 'block',
+              fontSize: '12px',
+              fontWeight: '500',
+              color: '#6B5B4E',
+              marginBottom: '6px',
+            }}
+          >
+            URL foto de perfil
+          </label>
+          <input
+            type="url"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '10px 14px',
+              borderRadius: '10px',
+              border: '1px solid #EDE8E0',
+              fontSize: '13px',
+              color: '#3D3530',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
+            placeholder="https://..."
+          />
+          {image && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginTop: '8px',
+              }}
+            >
+              <img
+                src={image}
+                alt="Preview"
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                }}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+              <span style={{ fontSize: '11px', color: '#9E8E82' }}>
+                Preview
+              </span>
             </div>
           )}
-
-          <div className="flex gap-3">
-            <Button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
-            >
-              <Check className="h-4 w-4" />
-              {loading ? 'Guardando...' : 'Guardar cambios'}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleCancel}
-              disabled={loading}
-              className="flex items-center gap-2"
-            >
-              <X className="h-4 w-4" />
-              Cancelar
-            </Button>
-          </div>
         </div>
-      </CardContent>
-    </Card>
+
+        {error && (
+          <div
+            style={{
+              backgroundColor: '#FEF2F2',
+              borderRadius: '10px',
+              padding: '10px 14px',
+            }}
+          >
+            <p style={{ fontSize: '12px', color: '#DC2626' }}>{error}</p>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '11px',
+              backgroundColor: '#7C6BC4',
+              color: 'white',
+              border: 'none',
+              borderRadius: '10px',
+              fontSize: '13px',
+              fontWeight: '600',
+              cursor: loading ? 'not-allowed' : 'pointer',
+            }}
+          >
+            <Check size={14} />
+            {loading ? 'Guardando...' : 'Guardar'}
+          </button>
+          <button
+            onClick={handleCancel}
+            style={{
+              padding: '11px 16px',
+              backgroundColor: '#F5F0E8',
+              color: '#6B5B4E',
+              border: 'none',
+              borderRadius: '10px',
+              fontSize: '13px',
+              fontWeight: '500',
+              cursor: 'pointer',
+            }}
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
