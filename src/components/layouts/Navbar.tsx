@@ -12,7 +12,6 @@ import {
   User,
   Users,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -34,48 +33,142 @@ export default function Navbar() {
       : links;
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <span className="text-2xl">🧘</span>
-            <span className="text-lg font-bold text-gray-900">
-              Namaste Yoga
-            </span>
-          </Link>
+    <nav
+      style={{
+        backgroundColor: 'rgba(253,250,245,0.95)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid #EDE8E0',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+      }}
+    >
+      <div
+        style={{
+          maxWidth: '1100px',
+          margin: '0 auto',
+          padding: '0 24px',
+          height: '64px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        {/* Logo */}
+        <Link
+          href="/dashboard"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            textDecoration: 'none',
+          }}
+        >
+          <div
+            style={{
+              width: '36px',
+              height: '36px',
+              backgroundColor: '#EDE9F8',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '18px',
+            }}
+          >
+            🪷
+          </div>
+          <div>
+            <p
+              style={{
+                fontSize: '16px',
+                fontWeight: '600',
+                color: '#3D3530',
+                lineHeight: '1.2',
+                margin: 0,
+              }}
+            >
+              Shanti
+            </p>
+            <p style={{ fontSize: '10px', color: '#9E8E82', margin: 0 }}>
+              Centro de Yoga
+            </p>
+          </div>
+        </Link>
 
-          {/* Links */}
-          <div className="flex items-center gap-1">
-            {allLinks.map(({ href, label, icon: Icon }) => (
+        {/* Links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          {allLinks.map(({ href, label, icon: Icon }) => {
+            const isActive = pathname === href;
+            return (
               <Link
                 key={href}
                 href={href}
-                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${
-                  pathname === href
-                    ? 'bg-purple-100 text-purple-700'
-                    : 'text-gray-500 hover:bg-gray-100'
-                }`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '8px 14px',
+                  borderRadius: '10px',
+                  fontSize: '13px',
+                  fontWeight: isActive ? '600' : '400',
+                  color: isActive ? '#7C6BC4' : '#6B5B4E',
+                  backgroundColor: isActive ? '#EDE9F8' : 'transparent',
+                  textDecoration: 'none',
+                  transition: 'all 0.15s',
+                }}
               >
-                <Icon className="h-4 w-4" />
+                <Icon size={15} />
                 {label}
               </Link>
-            ))}
-          </div>
+            );
+          })}
+        </div>
 
-          {/* Usuario */}
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500">{session?.user?.name}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => signOut({ callbackUrl: '/login' })}
-              className="flex items-center gap-2"
+        {/* Usuario */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div
+              style={{
+                width: '32px',
+                height: '32px',
+                backgroundColor: '#EDE9F8',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '13px',
+                fontWeight: '600',
+                color: '#7C6BC4',
+              }}
             >
-              <LogOut className="h-4 w-4" />
-              Salir
-            </Button>
+              {session?.user?.name?.charAt(0).toUpperCase()}
+            </div>
+            <span
+              style={{ fontSize: '13px', color: '#6B5B4E', fontWeight: '500' }}
+            >
+              {session?.user?.name?.split(' ')[0]}
+            </span>
           </div>
+          <button
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 14px',
+              borderRadius: '10px',
+              fontSize: '13px',
+              color: '#9E8E82',
+              backgroundColor: 'transparent',
+              border: '1px solid #EDE8E0',
+              cursor: 'pointer',
+              fontWeight: '500',
+            }}
+          >
+            <LogOut size={14} />
+            Salir
+          </button>
         </div>
       </div>
     </nav>

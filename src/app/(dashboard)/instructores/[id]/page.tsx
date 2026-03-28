@@ -3,9 +3,6 @@ import { redirect, notFound } from 'next/navigation';
 import { db } from '@/lib/db';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, Users } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function InstructorProfilePage({
@@ -55,15 +52,10 @@ export default async function InstructorProfilePage({
     notFound();
   }
 
-  // Total clases impartidas
   const totalClasses = await db.class.count({
-    where: {
-      instructorId: id,
-      status: 'COMPLETED',
-    },
+    where: { instructorId: id, status: 'COMPLETED' },
   });
 
-  // Total alumnos únicos
   const totalStudents = await db.booking.findMany({
     where: {
       class: { instructorId: id },
@@ -74,159 +66,372 @@ export default async function InstructorProfilePage({
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="mx-auto max-w-4xl">
-        {/* Header perfil */}
-        <Card className="mb-8">
-          <CardContent className="p-8">
-            <div className="flex items-start gap-6">
-              {instructor.user.image ? (
-                <img
-                  src={instructor.user.image}
-                  alt={instructor.user.name || 'Instructor'}
-                  className="h-24 w-24 flex-shrink-0 rounded-full object-cover"
-                />
-              ) : (
-                <div className="flex h-24 w-24 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 text-4xl font-bold text-purple-600">
-                  {instructor.user.name?.charAt(0).toUpperCase()}
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#FDFAF5',
+        padding: '40px 24px',
+      }}
+    >
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+        {/* Back */}
+        <Link
+          href="/instructores"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '13px',
+            color: '#9E8E82',
+            textDecoration: 'none',
+            marginBottom: '24px',
+            fontWeight: '500',
+          }}
+        >
+          ← Volver a instructores
+        </Link>
+
+        {/* Hero perfil */}
+        <div
+          style={{
+            backgroundColor: '#EDE9F8',
+            borderRadius: '24px',
+            padding: '40px',
+            marginBottom: '24px',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              top: '-40px',
+              right: '-40px',
+              width: '180px',
+              height: '180px',
+              backgroundColor: '#7C6BC4',
+              borderRadius: '50%',
+              opacity: '0.1',
+            }}
+          ></div>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '-50px',
+              left: '-20px',
+              width: '140px',
+              height: '140px',
+              backgroundColor: '#8FAF8F',
+              borderRadius: '50%',
+              opacity: '0.15',
+            }}
+          ></div>
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '28px',
+              position: 'relative',
+              zIndex: 1,
+            }}
+          >
+            {instructor.user.image ? (
+              <img
+                src={instructor.user.image}
+                alt={instructor.user.name || ''}
+                style={{
+                  width: '100px',
+                  height: '100px',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  flexShrink: 0,
+                  border: '4px solid white',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: '100px',
+                  height: '100px',
+                  backgroundColor: 'white',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '36px',
+                  fontWeight: '700',
+                  color: '#7C6BC4',
+                  flexShrink: 0,
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                }}
+              >
+                {instructor.user.name?.charAt(0).toUpperCase()}
+              </div>
+            )}
+
+            <div style={{ flex: 1 }}>
+              <h1
+                style={{
+                  fontSize: '28px',
+                  fontWeight: '700',
+                  color: '#3D3530',
+                  letterSpacing: '-0.5px',
+                  marginBottom: '4px',
+                }}
+              >
+                {instructor.user.name}
+              </h1>
+              <p
+                style={{
+                  fontSize: '14px',
+                  color: '#7C6BC4',
+                  fontWeight: '500',
+                  marginBottom: '16px',
+                }}
+              >
+                Instructor certificado · Shanti Centro de Yoga
+              </p>
+
+              {instructor.specialty.length > 0 && (
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                    marginBottom: '16px',
+                  }}
+                >
+                  {instructor.specialty.map((spec) => (
+                    <span
+                      key={spec}
+                      style={{
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        color: '#7C6BC4',
+                        backgroundColor: 'white',
+                        padding: '4px 12px',
+                        borderRadius: '20px',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                      }}
+                    >
+                      {spec}
+                    </span>
+                  ))}
                 </div>
               )}
 
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {instructor.user.name}
-                </h1>
-                <p className="mt-1 text-gray-500">Instructor de Yoga</p>
-
-                {/* Especialidades */}
-                {instructor.specialty.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {instructor.specialty.map((spec) => (
-                      <Badge
-                        key={spec}
-                        variant="secondary"
-                        className="bg-purple-100 text-purple-700"
-                      >
-                        {spec}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-
-                {/* Bio */}
-                {instructor.user.bio && (
-                  <p className="mt-4 leading-relaxed text-gray-600">
-                    {instructor.user.bio}
-                  </p>
-                )}
-
-                {/* Stats */}
-                <div className="mt-6 grid grid-cols-3 gap-4">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-purple-600">
-                      {totalClasses}
-                    </p>
-                    <p className="text-sm text-gray-500">Clases impartidas</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-purple-600">
-                      {totalStudents.length}
-                    </p>
-                    <p className="text-sm text-gray-500">Alumnos</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-purple-600">
-                      {instructor.classes.length}
-                    </p>
-                    <p className="text-sm text-gray-500">Proximas clases</p>
-                  </div>
-                </div>
-              </div>
+              {instructor.user.bio && (
+                <p
+                  style={{
+                    fontSize: '14px',
+                    color: '#6B5B4E',
+                    lineHeight: '1.7',
+                  }}
+                >
+                  {instructor.user.bio}
+                </p>
+              )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          {/* Stats */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '16px',
+              marginTop: '32px',
+              position: 'relative',
+              zIndex: 1,
+            }}
+          >
+            {[
+              { num: totalClasses, label: 'Clases impartidas' },
+              { num: totalStudents.length, label: 'Alumnos únicos' },
+              { num: instructor.classes.length, label: 'Próximas clases' },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: '14px',
+                  padding: '16px',
+                  textAlign: 'center',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: '28px',
+                    fontWeight: '700',
+                    color: '#7C6BC4',
+                    lineHeight: '1',
+                    marginBottom: '4px',
+                  }}
+                >
+                  {stat.num}
+                </p>
+                <p style={{ fontSize: '12px', color: '#9E8E82' }}>
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Próximas clases */}
         <div>
-          <h2 className="mb-4 text-xl font-bold text-gray-900">
-            Proximas clases
+          <h2
+            style={{
+              fontSize: '20px',
+              fontWeight: '700',
+              color: '#3D3530',
+              marginBottom: '16px',
+            }}
+          >
+            Próximas clases
           </h2>
 
           {instructor.classes.length === 0 ? (
-            <Card>
-              <CardContent className="p-8 text-center text-gray-400">
-                No hay clases programadas proximas
-              </CardContent>
-            </Card>
+            <div
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '16px',
+                padding: '48px',
+                textAlign: 'center',
+                border: '1px solid #EDE8E0',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '32px',
+                  display: 'block',
+                  marginBottom: '12px',
+                }}
+              >
+                🗓️
+              </span>
+              <p style={{ color: '#9E8E82', fontSize: '14px' }}>
+                No hay clases programadas próximamente
+              </p>
+            </div>
           ) : (
-            <div className="space-y-3">
+            <div
+              style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+            >
               {instructor.classes.map((yogaClass) => {
                 const spotsLeft =
                   yogaClass.capacity - yogaClass.bookings.length;
 
                 return (
-                  <Card
+                  <div
                     key={yogaClass.id}
-                    className="transition-shadow hover:shadow-md"
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius: '16px',
+                      padding: '20px',
+                      border: '1px solid #EDE8E0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
                   >
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="rounded-lg bg-purple-100 p-3">
-                            <Calendar className="h-5 w-5 text-purple-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-gray-900">
-                              {yogaClass.title}
-                            </h3>
-                            <div className="mt-1 flex items-center gap-3">
-                              <span className="flex items-center gap-1 text-sm text-gray-500">
-                                <Clock className="h-3 w-3" />
-                                {format(
-                                  new Date(yogaClass.startTime),
-                                  'EEEE d MMM · HH:mm',
-                                  { locale: es }
-                                )}
-                              </span>
-                              <span className="flex items-center gap-1 text-sm text-gray-500">
-                                <Users className="h-3 w-3" />
-                                <span
-                                  className={
-                                    spotsLeft === 0
-                                      ? 'text-red-500'
-                                      : spotsLeft <= 3
-                                        ? 'text-amber-500'
-                                        : 'text-gray-500'
-                                  }
-                                >
-                                  {spotsLeft === 0
-                                    ? 'Llena'
-                                    : `${spotsLeft} plazas`}
-                                </span>
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Badge
-                            variant="secondary"
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '16px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '48px',
+                          height: '48px',
+                          backgroundColor: yogaClass.classType.color + '20',
+                          borderRadius: '12px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '22px',
+                        }}
+                      >
+                        {yogaClass.classType.name.includes('Hatha')
+                          ? '🧘'
+                          : yogaClass.classType.name.includes('Vinyasa')
+                            ? '🌊'
+                            : '🌙'}
+                      </div>
+                      <div>
+                        <p
+                          style={{
+                            fontSize: '15px',
+                            fontWeight: '600',
+                            color: '#3D3530',
+                            marginBottom: '2px',
+                          }}
+                        >
+                          {yogaClass.title}
+                        </p>
+                        <p style={{ fontSize: '13px', color: '#9E8E82' }}>
+                          {format(
+                            new Date(yogaClass.startTime),
+                            'EEEE d MMM · HH:mm',
+                            { locale: es }
+                          )}
+                          {' · '}
+                          <span
                             style={{
-                              backgroundColor: yogaClass.classType.color + '20',
-                              color: yogaClass.classType.color,
+                              color:
+                                spotsLeft === 0
+                                  ? '#DC2626'
+                                  : spotsLeft <= 3
+                                    ? '#D97706'
+                                    : '#8FAF8F',
+                              fontWeight: '500',
                             }}
                           >
-                            {yogaClass.classType.name}
-                          </Badge>
-                          <Link
-                            href="/clases"
-                            className="rounded-lg bg-purple-600 px-4 py-2 text-sm text-white transition hover:bg-purple-700"
-                          >
-                            Reservar
-                          </Link>
-                        </div>
+                            {spotsLeft === 0 ? 'Llena' : `${spotsLeft} plazas`}
+                          </span>
+                        </p>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: '12px',
+                          fontWeight: '500',
+                          color: yogaClass.classType.color,
+                          backgroundColor: yogaClass.classType.color + '20',
+                          padding: '4px 12px',
+                          borderRadius: '20px',
+                        }}
+                      >
+                        {yogaClass.classType.name}
+                      </span>
+                      <Link
+                        href="/clases"
+                        style={{
+                          backgroundColor: '#7C6BC4',
+                          color: 'white',
+                          borderRadius: '10px',
+                          padding: '10px 20px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          textDecoration: 'none',
+                        }}
+                      >
+                        Reservar
+                      </Link>
+                    </div>
+                  </div>
                 );
               })}
             </div>

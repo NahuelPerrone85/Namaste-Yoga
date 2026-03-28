@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import ClassCard from './ClassCard';
 import { useSession } from 'next-auth/react';
 
@@ -54,10 +53,7 @@ export default function ClassCalendar() {
   }, [currentWeekStart]);
 
   const handleBook = async (classId: string) => {
-    if (!session) {
-      alert('Debes iniciar sesión para reservar');
-      return;
-    }
+    if (!session) return;
     setActionLoading(true);
     try {
       const res = await fetch('/api/bookings', {
@@ -68,7 +64,6 @@ export default function ClassCalendar() {
       const data = await res.json();
       if (!res.ok) {
         if (res.status === 403) {
-          // Redirigir a precios si no tiene membresía
           if (confirm(`${data.error}. ¿Quieres ver los planes de membresía?`)) {
             window.location.href = '/precios';
           }
@@ -119,36 +114,80 @@ export default function ClassCalendar() {
   return (
     <div>
       {/* Header semana */}
-      <div className="mb-6 flex items-center justify-between">
-        <Button
-          variant="outline"
-          size="sm"
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '24px',
+          backgroundColor: 'white',
+          borderRadius: '16px',
+          padding: '16px 20px',
+          border: '1px solid #EDE8E0',
+        }}
+      >
+        <button
           onClick={() => setCurrentWeekStart(addDays(currentWeekStart, -7))}
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '10px',
+            border: '1px solid #EDE8E0',
+            backgroundColor: 'white',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#6B5B4E',
+          }}
         >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <h2 className="text-lg font-semibold text-gray-700">
-          {format(currentWeekStart, "d 'de' MMMM", { locale: es })} —{' '}
-          {format(addDays(currentWeekStart, 6), "d 'de' MMMM yyyy", {
-            locale: es,
-          })}
-        </h2>
-        <Button
-          variant="outline"
-          size="sm"
+          <ChevronLeft size={18} />
+        </button>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: '16px', fontWeight: '600', color: '#3D3530' }}>
+            {format(currentWeekStart, "d 'de' MMMM", { locale: es })} —{' '}
+            {format(addDays(currentWeekStart, 6), "d 'de' MMMM yyyy", {
+              locale: es,
+            })}
+          </p>
+        </div>
+        <button
           onClick={() => setCurrentWeekStart(addDays(currentWeekStart, 7))}
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '10px',
+            border: '1px solid #EDE8E0',
+            backgroundColor: 'white',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#6B5B4E',
+          }}
         >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+          <ChevronRight size={18} />
+        </button>
       </div>
 
       {/* Grid semanal */}
       {loading ? (
-        <div className="py-12 text-center text-gray-400">
+        <div style={{ textAlign: 'center', padding: '64px', color: '#9E8E82' }}>
+          <span
+            style={{ fontSize: '32px', display: 'block', marginBottom: '16px' }}
+          >
+            🪷
+          </span>
           Cargando clases...
         </div>
       ) : (
-        <div className="grid grid-cols-7 gap-3">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(7, 1fr)',
+            gap: '12px',
+          }}
+        >
           {weekDays.map((day) => {
             const dayClasses = getClassesForDay(day);
             const isToday =
@@ -158,21 +197,57 @@ export default function ClassCalendar() {
               <div key={day.toISOString()}>
                 {/* Header día */}
                 <div
-                  className={`mb-2 rounded-lg p-2 text-center ${
-                    isToday ? 'bg-purple-600 text-white' : 'text-gray-500'
-                  }`}
+                  style={{
+                    textAlign: 'center',
+                    marginBottom: '8px',
+                    padding: '10px 6px',
+                    borderRadius: '12px',
+                    backgroundColor: isToday ? '#7C6BC4' : 'white',
+                    border: isToday ? 'none' : '1px solid #EDE8E0',
+                  }}
                 >
-                  <p className="text-xs font-medium uppercase">
+                  <p
+                    style={{
+                      fontSize: '11px',
+                      fontWeight: '600',
+                      letterSpacing: '0.5px',
+                      color: isToday ? 'rgba(255,255,255,0.8)' : '#9E8E82',
+                      textTransform: 'uppercase',
+                      marginBottom: '2px',
+                    }}
+                  >
                     {format(day, 'EEE', { locale: es })}
                   </p>
-                  <p className="text-lg font-bold">{format(day, 'd')}</p>
+                  <p
+                    style={{
+                      fontSize: '20px',
+                      fontWeight: '700',
+                      color: isToday ? 'white' : '#3D3530',
+                      lineHeight: '1',
+                    }}
+                  >
+                    {format(day, 'd')}
+                  </p>
                 </div>
 
                 {/* Clases del día */}
-                <div className="space-y-2">
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                  }}
+                >
                   {dayClasses.length === 0 ? (
-                    <p className="py-4 text-center text-xs text-gray-300">
-                      Sin clases
+                    <p
+                      style={{
+                        fontSize: '11px',
+                        color: '#C4B8B0',
+                        textAlign: 'center',
+                        padding: '16px 0',
+                      }}
+                    >
+                      —
                     </p>
                   ) : (
                     dayClasses.map((yogaClass) => (

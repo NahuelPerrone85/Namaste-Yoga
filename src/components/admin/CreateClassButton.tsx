@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import CreateClassForm from './CreateClassForm';
 
@@ -30,13 +29,25 @@ export default function CreateClassButton({
   return (
     <div>
       {!showForm && (
-        <Button
+        <button
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '10px 18px',
+            backgroundColor: '#7C6BC4',
+            color: 'white',
+            border: 'none',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: '600',
+            cursor: 'pointer',
+          }}
         >
-          <Plus className="h-4 w-4" />
+          <Plus size={14} />
           Nueva clase
-        </Button>
+        </button>
       )}
       {showForm && (
         <CreateClassForm
