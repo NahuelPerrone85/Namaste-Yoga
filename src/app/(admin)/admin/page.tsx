@@ -124,14 +124,7 @@ export default async function AdminPage() {
         </div>
 
         {/* Stats */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '16px',
-            marginBottom: '40px',
-          }}
-        >
+        <div className="grid-4" style={{ marginBottom: '40px' }}>
           {[
             {
               label: 'Alumnos',
@@ -205,14 +198,7 @@ export default async function AdminPage() {
         </div>
 
         {/* Clases hoy + Últimas reservas */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '24px',
-            marginBottom: '40px',
-          }}
-        >
+        <div className="grid-admin-2" style={{ marginBottom: '40px' }}>
           {/* Clases de hoy */}
           <div>
             <h2
@@ -401,22 +387,6 @@ export default async function AdminPage() {
         </div>
 
         {/* Gestionar clases */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: '20px',
-          }}
-        >
-          <h2 style={{ fontSize: '20px', fontWeight: '700', color: '#3D3530' }}>
-            Gestionar clases próximas
-          </h2>
-          <CreateClassButton
-            classTypes={classTypes}
-            instructors={instructors}
-          />
-        </div>
         <div style={{ marginBottom: '40px' }}>
           <ClassManagerList
             classes={upcomingClasses}

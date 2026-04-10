@@ -9,6 +9,16 @@ export default function HomePage() {
         fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
       }}
     >
+      <style>{`
+        @media (max-width: 768px) {
+          .home-nav-desktop { display: none !important; }
+          .home-nav-mobile { display: flex !important; }
+        }
+        @media (min-width: 769px) {
+          .home-nav-mobile { display: none !important; }
+          .home-nav-desktop { display: flex !important; }
+        }
+      `}</style>
       {/* NAVBAR */}
       <nav
         style={{
@@ -24,24 +34,33 @@ export default function HomePage() {
           style={{
             maxWidth: '1100px',
             margin: '0 auto',
-            padding: '0 24px',
+            padding: '0 16px',
             height: '64px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            gap: '12px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* Logo */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              flexShrink: 0,
+            }}
+          >
             <div
               style={{
-                width: '36px',
-                height: '36px',
+                width: '32px',
+                height: '32px',
                 backgroundColor: '#EDE9F8',
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '18px',
+                fontSize: '16px',
               }}
             >
               🪷
@@ -49,7 +68,7 @@ export default function HomePage() {
             <div>
               <span
                 style={{
-                  fontSize: '17px',
+                  fontSize: '15px',
                   fontWeight: '600',
                   color: '#3D3530',
                   letterSpacing: '-0.3px',
@@ -58,17 +77,23 @@ export default function HomePage() {
                 Shanti
               </span>
               <span
+                className="nav-desktop"
                 style={{
                   fontSize: '11px',
                   color: '#9E8E82',
                   marginLeft: '6px',
                 }}
               >
-                Yoga & Meditación
+                Centro de Yoga
               </span>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+
+          {/* Botones desktop */}
+          <div
+            className="home-nav-desktop"
+            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+          >
             <Link
               href="/login"
               style={{
@@ -98,19 +123,53 @@ export default function HomePage() {
               Empezar gratis
             </Link>
           </div>
+
+          {/* Botones móvil */}
+          <div
+            className="home-nav-mobile"
+            style={{ alignItems: 'center', gap: '6px', flexShrink: 0 }}
+          >
+            <Link
+              href="/login"
+              style={{
+                fontSize: '12px',
+                color: '#6B5B4E',
+                padding: '7px 10px',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                fontWeight: '500',
+                border: '1px solid #EDE8E0',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Entrar
+            </Link>
+            <Link
+              href="/register"
+              style={{
+                fontSize: '12px',
+                fontWeight: '600',
+                color: 'white',
+                backgroundColor: '#7C6BC4',
+                padding: '7px 12px',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Registro
+            </Link>
+          </div>
         </div>
       </nav>
 
       {/* HERO */}
       <section
+        className="grid-hero"
         style={{
           maxWidth: '1100px',
           margin: '0 auto',
           padding: '80px 24px 60px',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '64px',
-          alignItems: 'center',
         }}
       >
         <div>
@@ -233,7 +292,7 @@ export default function HomePage() {
         </div>
 
         {/* Hero visual */}
-        <div style={{ position: 'relative' }}>
+        <div className="hero-visual" style={{ position: 'relative' }}>
           <div
             style={{
               backgroundColor: '#EDE9F8',
@@ -297,7 +356,7 @@ export default function HomePage() {
                     borderRadius: '20px',
                   }}
                 >
-                  Hoy · 9:00
+                  · Hoy ·
                 </span>
                 <span style={{ fontSize: '12px', color: '#9E8E82' }}>
                   3 plazas
@@ -493,13 +552,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '24px',
-          }}
-        >
+        <div className="grid-3" style={{ gap: '24px' }}>
           {[
             {
               emoji: '🧘',
@@ -610,13 +663,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '32px',
-            }}
-          >
+          <div className="grid-3" style={{ gap: '32px' }}>
             {[
               {
                 step: '01',
@@ -722,13 +769,7 @@ export default function HomePage() {
             Lo que dicen nuestros alumnos
           </h2>
         </div>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '24px',
-          }}
-        >
+        <div className="grid-3" style={{ gap: '24px' }}>
           {[
             {
               name: 'María G.',
@@ -835,13 +876,8 @@ export default function HomePage() {
           </div>
 
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '24px',
-              maxWidth: '700px',
-              margin: '0 auto',
-            }}
+            className="grid-2"
+            style={{ maxWidth: '700px', margin: '0 auto' }}
           >
             {[
               {

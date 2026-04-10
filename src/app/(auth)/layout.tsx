@@ -4,15 +4,10 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-      }}
-    >
+    <div className="grid-auth">
       {/* Panel izquierdo — visual */}
       <div
+        className="auth-left-panel"
         style={{
           backgroundColor: '#EDE9F8',
           display: 'flex',
@@ -70,7 +65,8 @@ export default function AuthLayout({
             maxWidth: '400px',
           }}
         >
-          <div style={{ fontSize: '64px', marginBottom: '24px' }}>🪷</div>
+          <div style={{ fontSize: '64px', marginBottom: '12px' }}>🪷</div>
+
           <h1
             style={{
               fontSize: '32px',
@@ -81,7 +77,7 @@ export default function AuthLayout({
               lineHeight: '1.2',
             }}
           >
-            Bienvenido a Shanti
+            Shanti
           </h1>
           <p
             style={{
@@ -91,8 +87,8 @@ export default function AuthLayout({
               marginBottom: '40px',
             }}
           >
-            Tu centro de yoga & meditación. Encuentra la paz interior a través
-            de la práctica consciente.
+            Yoga & Meditación
+            {/* Encuentra tu paz interior a través de una práctica consciente. */}
           </p>
 
           {/* Testimonial */}

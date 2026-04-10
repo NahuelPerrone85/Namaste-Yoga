@@ -56,13 +56,7 @@ export default async function InstructoresPage() {
           </p>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '20px',
-          }}
-        >
+        <div className="grid-2">
           {instructors.map((instructor) => (
             <Link
               key={instructor.id}

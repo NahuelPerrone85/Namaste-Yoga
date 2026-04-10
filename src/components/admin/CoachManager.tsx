@@ -46,14 +46,12 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState<string | null>(null);
-
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newBio, setNewBio] = useState('');
   const [newSpecialty, setNewSpecialty] = useState('');
   const [createError, setCreateError] = useState('');
-
   const [editName, setEditName] = useState('');
   const [editBio, setEditBio] = useState('');
   const [editSpecialty, setEditSpecialty] = useState('');
@@ -108,11 +106,11 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
         body: JSON.stringify({
           name: editName,
           bio: editBio,
+          image: editImage,
           specialty: editSpecialty
             .split(',')
             .map((s) => s.trim())
             .filter(Boolean),
-          image: editImage,
         }),
       });
       const data = await res.json();
@@ -160,6 +158,16 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
 
   return (
     <div>
+      <style>{`
+        .coach-row { display: flex; align-items: center; justify-content: space-between; }
+        .coach-actions { display: flex; align-items: center; gap: 8px; }
+        @media (max-width: 768px) {
+          .coach-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .coach-actions { width: 100%; justify-content: flex-end; }
+        }
+      `}</style>
+
+      {/* Header */}
       <div
         style={{
           display: 'flex',
@@ -178,8 +186,8 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
             alignItems: 'center',
             gap: '6px',
             padding: '10px 18px',
-            backgroundColor: '#7C6BC4',
-            color: 'white',
+            backgroundColor: showCreateForm ? '#F5F0E8' : '#7C6BC4',
+            color: showCreateForm ? '#6B5B4E' : 'white',
             border: 'none',
             borderRadius: '10px',
             fontSize: '13px',
@@ -187,8 +195,8 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
             cursor: 'pointer',
           }}
         >
-          <Plus size={14} />
-          Nuevo coach
+          {showCreateForm ? <X size={14} /> : <Plus size={14} />}
+          {showCreateForm ? 'Cancelar' : 'Nuevo coach'}
         </button>
       </div>
 
@@ -216,27 +224,9 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
             >
               Nuevo coach
             </h3>
-            <button
-              onClick={() => setShowCreateForm(false)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#9E8E82',
-              }}
-            >
-              <X size={16} />
-            </button>
           </div>
           <form onSubmit={handleCreate}>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '14px',
-                marginBottom: '14px',
-              }}
-            >
+            <div className="grid-2" style={{ marginBottom: '14px' }}>
               <div>
                 <label style={labelStyle}>Nombre completo</label>
                 <input
@@ -269,9 +259,7 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
                 />
               </div>
               <div>
-                <label style={labelStyle}>
-                  Especialidades (separadas por coma)
-                </label>
+                <label style={labelStyle}>Especialidades (coma)</label>
                 <input
                   type="text"
                   value={newSpecialty}
@@ -371,14 +359,7 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
             >
               {editingId === instructor.id ? (
                 <div>
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      gap: '12px',
-                      marginBottom: '12px',
-                    }}
-                  >
+                  <div className="grid-2" style={{ marginBottom: '12px' }}>
                     <div>
                       <label style={labelStyle}>Nombre</label>
                       <input
@@ -468,13 +449,7 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
                   </div>
                 </div>
               ) : (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
+                <div className="coach-row">
                   <div
                     style={{
                       display: 'flex',
@@ -491,6 +466,7 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
                           height: '40px',
                           borderRadius: '50%',
                           objectFit: 'cover',
+                          flexShrink: 0,
                         }}
                       />
                     ) : (
@@ -506,6 +482,7 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
                           fontSize: '16px',
                           fontWeight: '700',
                           color: '#7C6BC4',
+                          flexShrink: 0,
                         }}
                       >
                         {instructor.user.name?.charAt(0).toUpperCase()}
@@ -556,13 +533,7 @@ export default function CoachManager({ instructors }: CoachManagerProps) {
                       </div>
                     </div>
                   </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                    }}
-                  >
+                  <div className="coach-actions">
                     <span style={{ fontSize: '12px', color: '#9E8E82' }}>
                       {instructor.classes.length} clases
                     </span>
