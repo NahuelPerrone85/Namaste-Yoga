@@ -87,13 +87,7 @@ export default function PricingCards({
   };
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: '20px',
-      }}
-    >
+    <div className="grid-pricing">
       {memberships.map((membership) => {
         const isActive = activeMembershipId === membership.id;
         const isPremium = membership.type === 'PREMIUM';

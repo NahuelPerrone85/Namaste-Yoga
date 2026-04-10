@@ -65,13 +65,7 @@ export default async function PerfilPage() {
       }}
     >
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '320px 1fr',
-            gap: '24px',
-          }}
-        >
+        <div className="grid-sidebar">
           {/* Columna izquierda */}
           <div
             style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}

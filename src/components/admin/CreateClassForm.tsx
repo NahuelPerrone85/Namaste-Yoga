@@ -135,14 +135,7 @@ export default function CreateClassForm({
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '16px',
-            marginBottom: '16px',
-          }}
-        >
+        <div className="grid-2" style={{ marginBottom: '16px' }}>
           <div>
             <label style={labelStyle}>Título de la clase</label>
             <input

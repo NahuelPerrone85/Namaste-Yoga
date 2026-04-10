@@ -93,14 +93,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Stats */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '16px',
-            marginBottom: '40px',
-          }}
-        >
+        <div className="grid-3" style={{ marginBottom: '40px' }}>
           <div
             style={{
               backgroundColor: 'white',
@@ -216,13 +209,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 380px',
-            gap: '24px',
-          }}
-        >
+        <div className="grid-dashboard">
           {/* Próximas clases */}
           <div>
             <div

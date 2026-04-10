@@ -181,13 +181,7 @@ export default function ClassCalendar() {
           Cargando clases...
         </div>
       ) : (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '12px',
-          }}
-        >
+        <div className="grid-7">
           {weekDays.map((day) => {
             const dayClasses = getClassesForDay(day);
             const isToday =
