@@ -13,8 +13,10 @@ import {
   Users,
   Menu,
   X,
+  ShoppingBag,
 } from 'lucide-react';
 import { useState } from 'react';
+import CartDrawer from '@/components/shop/CartDrawer';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -25,6 +27,7 @@ export default function Navbar() {
     { href: '/dashboard', label: 'Inicio', icon: Home },
     { href: '/clases', label: 'Clases', icon: Calendar },
     { href: '/instructores', label: 'Instructores', icon: Users },
+    { href: '/tienda', label: 'Tienda', icon: ShoppingBag },
     { href: '/precios', label: 'Precios', icon: CreditCard },
     { href: '/perfil', label: 'Perfil', icon: User },
   ];
@@ -136,8 +139,14 @@ export default function Navbar() {
           {/* Usuario desktop */}
           <div
             className="nav-desktop"
-            style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              marginLeft: '8px',
+            }}
           >
+            <CartDrawer />
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div
                 style={{
@@ -252,7 +261,7 @@ export default function Navbar() {
               </Link>
             );
           })}
-
+          <CartDrawer />
           {/* Divider */}
           <div
             style={{

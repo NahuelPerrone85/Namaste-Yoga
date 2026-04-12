@@ -38,6 +38,7 @@ model User {
   memberships   UserMembership[]
   payments      Payment[]
   instructor    Instructor?
+  orders        Order[]
 
   @@map("users")
 }
@@ -257,4 +258,69 @@ model Payment {
   userMembership UserMembership? @relation(fields: [userMembershipId], references: [id])
 
   @@map("payments")
+}
+
+// ===========================
+// E-COMMERCE
+// ===========================
+
+enum ProductCategory {
+  ROPA
+  ACCESORIOS
+  EQUIPAMIENTO
+  NUTRICION
+  OTROS
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  stock       Int             @default(0)
+  image       String?
+  category    ProductCategory @default(OTROS)
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  orderItems  OrderItem[]
+
+  @@map("products")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  status          OrderStatus @default(PENDING)
+  total           Float
+  stripePaymentId String?     @unique
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItems  OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
 }
