@@ -6,6 +6,7 @@ import { es } from 'date-fns/locale';
 import CreateClassButton from '@/components/admin/CreateClassButton';
 import ClassManagerList from '@/components/admin/ClassManagerList';
 import CoachManager from '@/components/admin/CoachManager';
+import ProductManager from '@/components/admin/ProductManager';
 
 export default async function AdminPage() {
   const session = await auth();
@@ -85,6 +86,10 @@ export default async function AdminPage() {
       },
       classes: { where: { status: 'SCHEDULED' }, select: { id: true } },
     },
+  });
+  const products = await db.product.findMany({
+    where: { isActive: true },
+    orderBy: { createdAt: 'desc' },
   });
 
   return (
@@ -398,6 +403,11 @@ export default async function AdminPage() {
         {/* Gestionar coaches */}
         <div>
           <CoachManager instructors={allInstructors} />
+        </div>
+
+        {/* Gestionar productos */}
+        <div style={{ marginTop: '40px' }}>
+          <ProductManager products={products} />
         </div>
       </div>
     </div>

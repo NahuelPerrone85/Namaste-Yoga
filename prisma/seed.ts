@@ -213,6 +213,74 @@ async function main() {
   }
 
   console.log('✅ Clases creadas');
+  // Productos de ejemplo
+  const products = [
+    {
+      name: 'Mat de Yoga Premium',
+      description:
+        'Mat antideslizante de 6mm de grosor, ideal para todo tipo de práctica.',
+      price: 49.99,
+      stock: 20,
+      category: 'EQUIPAMIENTO' as const,
+      image:
+        'https://images.unsplash.com/photo-1592432678016-e910b452f9a2?w=500',
+    },
+    {
+      name: 'Bloque de Yoga',
+      description:
+        'Bloque de espuma de alta densidad para mejorar tu alineación.',
+      price: 12.99,
+      stock: 30,
+      category: 'ACCESORIOS' as const,
+      image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500',
+    },
+    {
+      name: 'Camiseta Shanti',
+      description: 'Camiseta 100% algodón orgánico con el logo de Shanti.',
+      price: 29.99,
+      stock: 15,
+      category: 'ROPA' as const,
+      image:
+        'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500',
+    },
+    {
+      name: 'Correa de Yoga',
+      description: 'Correa de algodón resistente para mejorar tu flexibilidad.',
+      price: 8.99,
+      stock: 25,
+      category: 'ACCESORIOS' as const,
+      image:
+        'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=500',
+    },
+    {
+      name: 'Bolsa de Yoga',
+      description: 'Bolsa de lona con compartimento para mat y accesorios.',
+      price: 34.99,
+      stock: 10,
+      category: 'ACCESORIOS' as const,
+      image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500',
+    },
+    {
+      name: 'Leggings Shanti',
+      description:
+        'Leggings de alta elasticidad para máxima libertad de movimiento.',
+      price: 44.99,
+      stock: 12,
+      category: 'ROPA' as const,
+      image:
+        'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=500',
+    },
+  ];
+
+  for (const product of products) {
+    await prisma.product.upsert({
+      where: { id: product.name },
+      update: {},
+      create: product,
+    });
+  }
+
+  console.log('✅ Productos creados');
   console.log('🎉 Seed completado');
 }
 
