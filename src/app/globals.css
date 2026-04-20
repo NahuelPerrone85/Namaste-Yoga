@@ -208,3 +208,31 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+.chat-container {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  height: 600px;
+}
+
+@media (max-width: 768px) {
+  .chat-container {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}
+.chat-list-mobile {
+  height: 300px;
+}
+
+.chat-messages-mobile {
+  height: 400px;
+}
+
+@media (min-width: 769px) {
+  .chat-list-mobile,
+  .chat-messages-mobile {
+    height: 100%;
+  }
+}

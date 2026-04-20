@@ -84,7 +84,7 @@ export default function HomePage() {
                   marginLeft: '6px',
                 }}
               >
-                Centro de Yoga
+                Yoga & Meditación
               </span>
             </div>
           </div>
@@ -142,7 +142,7 @@ export default function HomePage() {
                 whiteSpace: 'nowrap',
               }}
             >
-              Entrar
+              Ingresar
             </Link>
             <Link
               href="/register"
@@ -157,7 +157,7 @@ export default function HomePage() {
                 whiteSpace: 'nowrap',
               }}
             >
-              Registro
+              Registrarse
             </Link>
           </div>
         </div>

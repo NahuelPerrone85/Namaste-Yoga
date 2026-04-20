@@ -14,20 +14,28 @@ import {
   Menu,
   X,
   ShoppingBag,
+  MessageCircle,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CartDrawer from '@/components/shop/CartDrawer';
 
 export default function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const links = [
     { href: '/dashboard', label: 'Inicio', icon: Home },
     { href: '/clases', label: 'Clases', icon: Calendar },
     { href: '/instructores', label: 'Instructores', icon: Users },
     { href: '/tienda', label: 'Tienda', icon: ShoppingBag },
+    {
+      href: '/mensajes',
+      label: 'Mensajes',
+      icon: MessageCircle,
+      badge: unreadCount > 0 ? unreadCount : undefined,
+    },
     { href: '/precios', label: 'Precios', icon: CreditCard },
     { href: '/perfil', label: 'Perfil', icon: User },
   ];
@@ -39,6 +47,25 @@ export default function Navbar() {
       ? [...links, ...adminLinks]
       : links;
 
+  // Fetch unread messages count
+  useEffect(() => {
+    if (!session?.user) return;
+
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch('/api/conversations/unread');
+        if (!res.ok) return;
+        const data = await res.json();
+        setUnreadCount(data.unreadCount);
+      } catch {
+        // silenciar errores
+      }
+    };
+
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 15000);
+    return () => clearInterval(interval);
+  }, [session?.user]);
   return (
     <>
       <nav
@@ -53,7 +80,7 @@ export default function Navbar() {
       >
         <div
           style={{
-            maxWidth: '1100px',
+            // maxWidth: '1100px',
             margin: '0 auto',
             padding: '0 24px',
             height: '64px',
@@ -99,7 +126,7 @@ export default function Navbar() {
                 Shanti
               </p>
               <p style={{ fontSize: '10px', color: '#9E8E82', margin: 0 }}>
-                Yoga & Meditación
+                Centro de Yoga
               </p>
             </div>
           </Link>
@@ -109,7 +136,7 @@ export default function Navbar() {
             className="nav-desktop"
             style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
           >
-            {allLinks.map(({ href, label, icon: Icon }) => {
+            {allLinks.map(({ href, label, icon: Icon, badge }) => {
               const isActive = pathname === href;
               return (
                 <Link
@@ -127,10 +154,32 @@ export default function Navbar() {
                     backgroundColor: isActive ? '#EDE9F8' : 'transparent',
                     textDecoration: 'none',
                     transition: 'all 0.15s',
+                    position: 'relative',
                   }}
                 >
                   <Icon size={15} />
                   {label}
+                  {badge && badge > 0 && (
+                    <span
+                      style={{
+                        // position: 'absolute',
+                        top: '4px',
+                        right: '4px',
+                        backgroundColor: '#DC2626',
+                        color: 'white',
+                        borderRadius: '50%',
+                        width: '16px',
+                        height: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '9px',
+                        fontWeight: '700',
+                      }}
+                    >
+                      {badge > 9 ? '9+' : badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -139,12 +188,7 @@ export default function Navbar() {
           {/* Usuario desktop */}
           <div
             className="nav-desktop"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              marginLeft: '8px',
-            }}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
           >
             <CartDrawer />
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -210,14 +254,36 @@ export default function Navbar() {
               borderRadius: '10px',
               cursor: 'pointer',
               color: '#7C6BC4',
+              position: 'relative',
             }}
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            {unreadCount > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '4px',
+                  right: '4px',
+                  backgroundColor: '#DC2626',
+                  color: 'white',
+                  borderRadius: '50%',
+                  width: '14px',
+                  height: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '8px',
+                  fontWeight: '700',
+                }}
+              >
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
           </button>
         </div>
       </nav>
 
-      {/* Menú móvil desplegable */}
+      {/* Menú móvil */}
       {menuOpen && (
         <div
           style={{
@@ -235,7 +301,7 @@ export default function Navbar() {
             overflowY: 'auto',
           }}
         >
-          {allLinks.map(({ href, label, icon: Icon }) => {
+          {allLinks.map(({ href, label, icon: Icon, badge }) => {
             const isActive = pathname === href;
             return (
               <Link
@@ -254,15 +320,30 @@ export default function Navbar() {
                   backgroundColor: isActive ? '#EDE9F8' : 'white',
                   textDecoration: 'none',
                   border: '1px solid #EDE8E0',
+                  position: 'relative',
                 }}
               >
                 <Icon size={18} />
                 {label}
+                {badge && badge > 0 && (
+                  <span
+                    style={{
+                      marginLeft: 'auto',
+                      backgroundColor: '#DC2626',
+                      color: 'white',
+                      borderRadius: '20px',
+                      padding: '2px 8px',
+                      fontSize: '11px',
+                      fontWeight: '700',
+                    }}
+                  >
+                    {badge > 9 ? '9+' : badge}
+                  </span>
+                )}
               </Link>
             );
           })}
-          <CartDrawer />
-          {/* Divider */}
+
           <div
             style={{
               height: '1px',
@@ -271,7 +352,10 @@ export default function Navbar() {
             }}
           ></div>
 
-          {/* Usuario info */}
+          <div style={{ marginBottom: '8px' }}>
+            <CartDrawer />
+          </div>
+
           <div
             style={{
               display: 'flex',
@@ -316,7 +400,6 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Cerrar sesión */}
           <button
             onClick={() => signOut({ callbackUrl: '/login' })}
             style={{
@@ -339,7 +422,6 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* CSS responsive para navbar */}
       <style>{`
         @media (max-width: 768px) {
           .nav-desktop { display: none !important; }
