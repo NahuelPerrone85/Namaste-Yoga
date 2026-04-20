@@ -25,7 +25,12 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  const links = [
+  const links: {
+    href: string;
+    label: string;
+    icon: React.ComponentType<{ size?: number }>;
+    badge?: number;
+  }[] = [
     { href: '/dashboard', label: 'Inicio', icon: Home },
     { href: '/clases', label: 'Clases', icon: Calendar },
     { href: '/instructores', label: 'Instructores', icon: Users },
@@ -40,7 +45,12 @@ export default function Navbar() {
     { href: '/perfil', label: 'Perfil', icon: User },
   ];
 
-  const adminLinks = [{ href: '/admin', label: 'Admin', icon: Settings }];
+  const adminLinks: {
+    href: string;
+    label: string;
+    icon: React.ComponentType<{ size?: number }>;
+    badge?: number;
+  }[] = [{ href: '/admin', label: 'Admin', icon: Settings }];
 
   const allLinks =
     (session?.user as { role?: string })?.role === 'ADMIN'

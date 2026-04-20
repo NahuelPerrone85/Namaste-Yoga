@@ -29,6 +29,10 @@ export default async function MensajesPage() {
       messages: {
         orderBy: { createdAt: 'desc' },
         take: 1,
+        include: {
+          sender: { select: { id: true, name: true, image: true } },
+          reads: { select: { userId: true } },
+        },
       },
     },
     orderBy: { updatedAt: 'desc' },
@@ -81,9 +85,9 @@ export default async function MensajesPage() {
           </p>
         </div>
         <ChatClient
-          conversations={conversations}
+          conversations={conversations as any}
           currentUserId={userId}
-          users={users}
+          users={users as any}
         />
       </div>
     </div>

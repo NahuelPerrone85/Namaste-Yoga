@@ -15,7 +15,7 @@ interface User {
 interface Message {
   id: string;
   content: string;
-  createdAt: string;
+  createdAt: Date | string;
   senderId: string;
   sender: {
     id: string;
@@ -27,7 +27,7 @@ interface Message {
 
 interface Conversation {
   id: string;
-  updatedAt: string;
+  updatedAt: Date | string;
   participants: { user: User }[];
   messages: Message[];
 }
