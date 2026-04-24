@@ -354,14 +354,6 @@ export default function Navbar() {
             );
           })}
 
-          <div
-            style={{
-              height: '1px',
-              backgroundColor: '#EDE8E0',
-              margin: '8px 0',
-            }}
-          ></div>
-
           <div style={{ marginBottom: '8px' }}>
             <CartDrawer />
           </div>

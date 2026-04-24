@@ -7,6 +7,8 @@ import CreateClassButton from '@/components/admin/CreateClassButton';
 import ClassManagerList from '@/components/admin/ClassManagerList';
 import CoachManager from '@/components/admin/CoachManager';
 import ProductManager from '@/components/admin/ProductManager';
+import CashSaleManager from '@/components/admin/CashSaleManager';
+import SalesHistory from '@/components/admin/SalesHistory';
 
 export default async function AdminPage() {
   const session = await auth();
@@ -408,6 +410,16 @@ export default async function AdminPage() {
         {/* Gestionar productos */}
         <div style={{ marginTop: '40px' }}>
           <ProductManager products={products} />
+        </div>
+
+        {/* Venta en efectivo */}
+        <div style={{ marginTop: '40px' }}>
+          <CashSaleManager products={products} />
+        </div>
+
+        {/* Historial de ventas */}
+        <div style={{ marginTop: '40px' }}>
+          <SalesHistory />
         </div>
       </div>
     </div>

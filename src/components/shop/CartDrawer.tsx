@@ -51,34 +51,28 @@ export default function CartDrawer() {
           position: 'relative',
           display: 'flex',
           alignItems: 'center',
-          gap: '6px',
-          padding: '8px 14px',
-          backgroundColor: '#EDE9F8',
-          border: 'none',
-          borderRadius: '10px',
+          gap: '12px',
+          padding: '10px 12px',
+          borderRadius: '12px',
+          fontSize: '15px',
+          fontWeight: '400',
+          color: '#897b70',
+          backgroundColor: '#ede9f8',
+          width: '100%',
           cursor: 'pointer',
-          color: '#7C6BC4',
-          fontWeight: '600',
-          fontSize: '13px',
         }}
       >
-        <ShoppingCart size={16} />
+        <ShoppingCart size={18} />
         Carrito
         {itemCount > 0 && (
           <span
             style={{
-              position: 'absolute',
-              top: '-6px',
-              right: '-6px',
-              backgroundColor: '#7C6BC4',
+              marginLeft: 'auto',
+              backgroundColor: '#DC2626',
               color: 'white',
-              borderRadius: '50%',
-              width: '18px',
-              height: '18px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '10px',
+              borderRadius: '20px',
+              padding: '2px 8px',
+              fontSize: '11px',
               fontWeight: '700',
             }}
           >
@@ -102,12 +96,13 @@ export default function CartDrawer() {
 
       {/* Drawer */}
       <div
+        className="cart-drawer"
         style={{
           position: 'fixed',
           top: 0,
-          right: isOpen ? 0 : '-420px',
-          width: '420px',
-          maxWidth: '100vw',
+          right: isOpen ? 0 : '-100vw',
+          width: '100%',
+          maxWidth: '420px',
           height: '100vh',
           backgroundColor: '#FDFAF5',
           zIndex: 101,

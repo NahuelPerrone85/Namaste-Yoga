@@ -32,61 +32,88 @@ export async function POST(req: Request) {
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
+      const metadata = session.metadata;
 
-      console.log('Session metadata:', session.metadata);
+      console.log('Metadata:', metadata);
 
-      const userId = session.metadata?.userId;
-      const membershipId = session.metadata?.membershipId;
+      // Venta de tienda (tiene orderId)
+      if (metadata?.orderId) {
+        const order = await db.order.findUnique({
+          where: { id: metadata.orderId },
+          include: { orderItems: true },
+        });
 
-      if (!userId || !membershipId) {
-        console.error('Metadata incompleta:', session.metadata);
-        return NextResponse.json(
-          { error: 'Metadata incompleta' },
-          { status: 400 }
-        );
+        if (!order) {
+          console.error('Orden no encontrada:', metadata.orderId);
+          return NextResponse.json(
+            { error: 'Orden no encontrada' },
+            { status: 404 }
+          );
+        }
+
+        await db.order.update({
+          where: { id: metadata.orderId },
+          data: {
+            status: 'PAID',
+            stripePaymentId: session.payment_intent as string,
+          },
+        });
+
+        // Reducir stock
+        for (const item of order.orderItems) {
+          await db.product.update({
+            where: { id: item.productId },
+            data: { stock: { decrement: item.quantity } },
+          });
+        }
+
+        console.log(`✅ Orden ${metadata.orderId} pagada`);
       }
 
-      const membership = await db.membership.findUnique({
-        where: { id: membershipId },
-      });
+      // Compra de membresía (tiene membershipId)
+      if (metadata?.membershipId && metadata?.userId) {
+        const membership = await db.membership.findUnique({
+          where: { id: metadata.membershipId },
+        });
 
-      if (!membership) {
-        console.error('Membresía no encontrada:', membershipId);
-        return NextResponse.json(
-          { error: 'Membresía no encontrada' },
-          { status: 404 }
-        );
+        if (!membership) {
+          console.error('Membresía no encontrada:', metadata.membershipId);
+          return NextResponse.json(
+            { error: 'Membresía no encontrada' },
+            { status: 404 }
+          );
+        }
+
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + membership.duration);
+
+        await db.userMembership.updateMany({
+          where: { userId: metadata.userId, isActive: true },
+          data: { isActive: false },
+        });
+
+        const userMembership = await db.userMembership.create({
+          data: {
+            userId: metadata.userId,
+            membershipId: membership.id,
+            endDate,
+            isActive: true,
+          },
+        });
+
+        await db.payment.create({
+          data: {
+            userId: metadata.userId,
+            userMembershipId: userMembership.id,
+            amount: membership.price,
+            currency: 'EUR',
+            status: 'COMPLETED',
+            stripePaymentId: session.payment_intent as string,
+          },
+        });
+
+        console.log(`✅ Membresía activada para usuario ${metadata.userId}`);
       }
-
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + membership.duration);
-
-      await db.userMembership.updateMany({
-        where: { userId, isActive: true },
-        data: { isActive: false },
-      });
-
-      const userMembership = await db.userMembership.create({
-        data: {
-          userId,
-          membershipId,
-          endDate,
-          isActive: true,
-        },
-      });
-
-      await db.payment.create({
-        data: {
-          userId,
-          userMembershipId: userMembership.id,
-          amount: membership.price,
-          currency: 'EUR',
-          status: 'COMPLETED',
-          stripePaymentId: session.payment_intent as string,
-        },
-      });
-
-      console.log('Membresia activada para usuario:', userId);
     }
 
     return NextResponse.json({ received: true }, { status: 200 });

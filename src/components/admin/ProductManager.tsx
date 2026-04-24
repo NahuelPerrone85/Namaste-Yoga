@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Pencil, Trash2, X, Check } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Check, Camera, Loader } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -62,6 +62,11 @@ export default function ProductManager({ products }: ProductManagerProps) {
   const [editImage, setEditImage] = useState('');
   const [editCategory, setEditCategory] = useState('');
   const [editError, setEditError] = useState('');
+
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingEditImage, setUploadingEditImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,6 +164,29 @@ export default function ProductManager({ products }: ProductManagerProps) {
     setEditImage(product.image || '');
     setEditCategory(product.category);
     setEditError('');
+  };
+
+  const handleImageUpload = async (
+    file: File,
+    setImage: (url: string) => void,
+    setUploading: (v: boolean) => void
+  ) => {
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok) setImage(data.url);
+      else alert(data.error);
+    } catch {
+      alert('Error al subir la imagen');
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -292,14 +320,73 @@ export default function ProductManager({ products }: ProductManagerProps) {
                 </select>
               </div>
               <div>
-                <label style={labelStyle}>URL imagen (opcional)</label>
-                <input
-                  type="url"
-                  value={newImage}
-                  onChange={(e) => setNewImage(e.target.value)}
-                  style={inputStyle}
-                  placeholder="https://..."
-                />
+                <label style={labelStyle}>Imagen del producto</label>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                  }}
+                >
+                  {/* Preview */}
+                  {newImage && (
+                    <img
+                      src={newImage}
+                      alt="Preview"
+                      style={{
+                        width: '80px',
+                        height: '80px',
+                        borderRadius: '10px',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  )}
+                  {/* Botón subir desde dispositivo */}
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 14px',
+                      backgroundColor: '#EDE9F8',
+                      color: '#7C6BC4',
+                      border: 'none',
+                      borderRadius: '10px',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {uploadingImage ? (
+                      <Loader size={13} />
+                    ) : (
+                      <Camera size={13} />
+                    )}
+                    {uploadingImage ? 'Subiendo...' : 'Seleccionar Imagen'}
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file)
+                        handleImageUpload(file, setNewImage, setUploadingImage);
+                    }}
+                  />
+                  {/* O URL manual */}
+                  <input
+                    type="url"
+                    value={newImage}
+                    onChange={(e) => setNewImage(e.target.value)}
+                    style={inputStyle}
+                    placeholder="Pega la URL de la imagen"
+                  />
+                </div>
               </div>
             </div>
             {createError && (
@@ -444,13 +531,76 @@ export default function ProductManager({ products }: ProductManagerProps) {
                       </select>
                     </div>
                     <div>
-                      <label style={labelStyle}>URL imagen</label>
-                      <input
-                        type="url"
-                        value={editImage}
-                        onChange={(e) => setEditImage(e.target.value)}
-                        style={inputStyle}
-                      />
+                      <label style={labelStyle}>Imagen del producto</label>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '8px',
+                        }}
+                      >
+                        {editImage && (
+                          <img
+                            src={editImage}
+                            alt="Preview"
+                            style={{
+                              width: '80px',
+                              height: '80px',
+                              borderRadius: '10px',
+                              objectFit: 'cover',
+                            }}
+                          />
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => editFileInputRef.current?.click()}
+                          disabled={uploadingEditImage}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '8px 14px',
+                            backgroundColor: '#EDE9F8',
+                            color: '#7C6BC4',
+                            border: 'none',
+                            borderRadius: '10px',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {uploadingEditImage ? (
+                            <Loader size={13} />
+                          ) : (
+                            <Camera size={13} />
+                          )}
+                          {uploadingEditImage
+                            ? 'Subiendo...'
+                            : 'Seleccionar Imagen'}
+                        </button>
+                        <input
+                          ref={editFileInputRef}
+                          type="file"
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file)
+                              handleImageUpload(
+                                file,
+                                setEditImage,
+                                setUploadingEditImage
+                              );
+                          }}
+                        />
+                        <input
+                          type="url"
+                          value={editImage}
+                          onChange={(e) => setEditImage(e.target.value)}
+                          style={inputStyle}
+                          placeholder="Pega la URL de la imagen"
+                        />
+                      </div>
                     </div>
                   </div>
                   {editError && (

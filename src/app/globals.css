@@ -236,3 +236,22 @@ body {
     height: 100%;
   }
 }
+
+@media (max-width: 480px) {
+  .cart-drawer {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+}
+
+.grid-cash-sale {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+}
+
+@media (max-width: 768px) {
+  .grid-cash-sale {
+    grid-template-columns: 1fr;
+  }
+}
